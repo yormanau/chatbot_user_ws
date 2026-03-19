@@ -1,0 +1,21 @@
+{
+  "name": "chatbot-whatsapp",
+  "version": "1.0.0",
+  "description": "Chatbot WhatsApp - Fase 1: Registro de usuarios",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.0",
+    "express": "^5.2.1",
+    "mysql2": "^3.9.0",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.34.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

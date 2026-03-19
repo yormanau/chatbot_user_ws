@@ -1,0 +1,6 @@
+.wwebjs_auth/
+.wwebjs_cache/
+node_modules/
+.env
+.$user_ws_bot.drawio.bkp
+user_ws_bot.drawio
