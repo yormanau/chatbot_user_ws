@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 /**
  * Envía una notificación al número del bot informando
  * que un nuevo usuario fue registrado exitosamente.

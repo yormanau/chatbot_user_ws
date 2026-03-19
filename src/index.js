@@ -28,11 +28,14 @@ app.listen(PORT, () => {
 
 // ---- Store + Cliente ----
 const store = new MySQLStore(db);
+console.log('[Store] métodos:', Object.getOwnPropertyNames(MySQLStore.prototype));
+
 
 const client = new Client({
   authStrategy: new RemoteAuth({
+    clientId: 'chatbot', 
     store: store,
-    backupSyncIntervalMs: 300000, // guarda sesión cada 5 min
+    backupSyncIntervalMs: 60000, // guarda sesión cada 5 min
   }),
   puppeteer: {
     executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,

@@ -15,11 +15,11 @@ CREATE TABLE IF NOT EXISTS users (
   UNIQUE KEY uq_phone(phone)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Tabla de sesiones
+-- Tabla para almacenar sesiones de WhatsApp
 CREATE TABLE IF NOT EXISTS whatsapp_sessions (
   id INT AUTO_INCREMENT PRIMARY KEY,
   session_id VARCHAR(255) NOT NULL UNIQUE,
-  session_data LONGTEXT,
+  session_data LONGBLOB,
   created_at DATETIME,
   updated_at DATETIME
 );
