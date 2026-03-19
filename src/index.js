@@ -32,6 +32,7 @@ app.listen(3000, () => {
 const client = new Client({
   authStrategy: new LocalAuth({ clientId: 'chatbot-fase1' }),
   puppeteer: {
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
