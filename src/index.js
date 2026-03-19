@@ -1,22 +1,19 @@
-
 require('dotenv').config();
 const { runMigrations }         = require('./config/migrate');
-const { Client, LocalAuth }     = require('whatsapp-web.js');
+const { Client, RemoteAuth }    = require('whatsapp-web.js');
 const qrcode                    = require('qrcode-terminal');
 const QRCode                    = require('qrcode');
 const express                   = require('express');
 const { handleIncomingMessage } = require('./handlers/messageHandler');
-const fs   = require('fs');
-const path = require('path');
+const MySQLStore                = require('./store/MySQLStore');
+const db                        = require('./config/database'); // tu conexión mysql2
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 let qrImageUrl = null;
 let readyAt = null;
 
-app.get('/', (req, res) => {
-  res.redirect('/qr');
-});
+app.get('/', (req, res) => res.redirect('/qr'));
 
 app.get('/qr', async (req, res) => {
   if (!qrImageUrl) {
@@ -25,14 +22,18 @@ app.get('/qr', async (req, res) => {
   res.send(`<img src="${qrImageUrl}" style="width:300px"/>`);
 });
 
-
-
 app.listen(PORT, () => {
   console.log(`[Server] QR disponible en http://localhost:${PORT}/qr`);
 });
 
+// ---- Store + Cliente ----
+const store = new MySQLStore(db);
+
 const client = new Client({
-  authStrategy: new LocalAuth({ clientId: 'chatbot-fase1' }),
+  authStrategy: new RemoteAuth({
+    store: store,
+    backupSyncIntervalMs: 300000, // guarda sesión cada 5 min
+  }),
   puppeteer: {
     executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
     args: [
@@ -54,14 +55,17 @@ client.on('qr', async (qr) => {
 });
 
 client.on('authenticated', () => {
-  qrImageUrl = null; // limpiar el QR una vez autenticado
+  qrImageUrl = null;
   console.log('[WhatsApp] Sesión autenticada correctamente.');
 });
-
 
 client.on('ready', () => {
   readyAt = Date.now();
   console.log('[WhatsApp] Cliente listo y escuchando mensajes...');
+});
+
+client.on('remote_session_saved', () => {
+  console.log('[WhatsApp] Sesión guardada en MySQL ✅');
 });
 
 client.on('disconnected', (reason) => {
@@ -70,16 +74,7 @@ client.on('disconnected', (reason) => {
 
 client.on('message', (message) => handleIncomingMessage(client, message, readyAt));
 
-function clearChromiumLock() {
-  const lockPath = path.resolve('/app/.wwebjs_auth/session-chatbot-fase1/Default/SingletonLock');
-  if (fs.existsSync(lockPath)) {
-    fs.unlinkSync(lockPath);
-    console.log('[Chromium] Lock file eliminado');
-  }
-}
-
 async function start() {
-  clearChromiumLock();
   await runMigrations();
   client.initialize();
 }

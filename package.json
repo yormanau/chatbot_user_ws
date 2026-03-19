@@ -8,6 +8,7 @@
     "dev": "nodemon src/index.js"
   },
   "dependencies": {
+    "adm-zip": "^0.5.16",
     "dotenv": "^16.4.0",
     "express": "^5.2.1",
     "mysql2": "^3.9.0",
