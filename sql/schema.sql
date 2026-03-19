@@ -23,3 +23,6 @@ CREATE TABLE IF NOT EXISTS whatsapp_sessions (
   created_at DATETIME,
   updated_at DATETIME
 );
+
+-- Modificar la tabla whatsapp_sessions, columna session_data a LONGBLOB
+ALTER TABLE whatsapp_sessions MODIFY session_data LONGBLOB;
