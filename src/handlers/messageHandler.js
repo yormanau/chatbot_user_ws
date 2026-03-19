@@ -15,8 +15,9 @@ async function handleIncomingMessage(client, message, readyAt) {
   try {
     if (message.from.endsWith('@g.us') || message.fromMe) return;
 
-    if (readyAt && message.timestamp * 1000 < readyAt) {
-      console.log('[Handler] Mensaje antiguo ignorado');
+    const ahoraEnSegundos = Math.floor(Date.now() / 1000);
+    if (message.timestamp < ahoraEnSegundos - 30) {
+      console.log(`[Handler] Mensaje antiguo ignorado (${new Date(message.timestamp * 1000).toLocaleString()})`);
       return;
     }
 
