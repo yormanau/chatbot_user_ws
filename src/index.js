@@ -31,7 +31,17 @@ app.listen(3000, () => {
 
 const client = new Client({
   authStrategy: new LocalAuth({ clientId: 'chatbot-fase1' }),
-  puppeteer: { args: ['--no-sandbox', '--disable-setuid-sandbox'] },
+  puppeteer: {
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--no-first-run',
+      '--no-zygote',
+      '--single-process',
+    ],
+  },
 });
 
 client.on('qr', async (qr) => {
