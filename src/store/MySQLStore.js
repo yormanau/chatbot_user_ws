@@ -22,31 +22,36 @@ class MySQLStore {
   }
 
   async save(options) {
-  const sessionId = this._getSessionId(options.session);
-  const zipPath   = options.path || `${options.session}.zip`;
+    const sessionId = this._getSessionId(options.session);
+    const zipPath   = options.path || `${options.session}.zip`;
 
-  if (!fs.existsSync(zipPath)) {
-    console.warn('[MySQLStore] No se encontró el zip en:', zipPath);
-    return;
-  }
+    if (!fs.existsSync(zipPath)) {
+        console.warn('[MySQLStore] No se encontró el zip en:', zipPath);
+        return;
+    }
 
-  // Leer como Buffer binario directamente ← fix
-  const data   = fs.readFileSync(zipPath);
-  const exists = await this.sessionExists(options);
+    const data   = Buffer.from(fs.readFileSync(zipPath));
+    const exists = await this.sessionExists(options);
 
-  if (exists) {
-    await this.db.query(
-      'UPDATE whatsapp_sessions SET session_data = ?, updated_at = NOW() WHERE session_id = ?',
-      [data, sessionId]
-    );
-  } else {
-    await this.db.query(
-      'INSERT INTO whatsapp_sessions (session_id, session_data, created_at) VALUES (?, ?, NOW())',
-      [sessionId, data]
-    );
-  }
-  console.log('[MySQLStore] Sesión guardada correctamente ✅');
-}
+    // Obtener conexión directa para manejar datos binarios
+    const conn = await this.db.getConnection();
+    try {
+        if (exists) {
+        await conn.query(
+            'UPDATE whatsapp_sessions SET session_data = ?, updated_at = NOW() WHERE session_id = ?',
+            [data, sessionId]
+        );
+        } else {
+        await conn.query(
+            'INSERT INTO whatsapp_sessions (session_id, session_data, created_at) VALUES (?, ?, NOW())',
+            [sessionId, data]
+        );
+        }
+        console.log('[MySQLStore] Sesión guardada correctamente ✅');
+    } finally {
+        conn.release();
+    }
+    }
 
   async extract(options) {
   const sessionId = this._getSessionId(options.session);
