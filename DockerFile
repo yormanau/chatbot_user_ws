@@ -23,7 +23,8 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 COPY package*.json ./
-RUN PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm install
+RUN PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm install && \
+    rm -rf /root/.cache/puppeteer
 COPY . .
 
 CMD ["npm", "start"]
