@@ -34,7 +34,7 @@ const client = new Client({
   authStrategy: new RemoteAuth({
     clientId: 'chatbot', 
     store: store,
-    backupSyncIntervalMs: 60000, // guarda sesión cada 5 min
+    backupSyncIntervalMs: 3600000, // guarda sesión cada 5 min
   }),
   puppeteer: {
     executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
