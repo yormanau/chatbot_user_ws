@@ -8,6 +8,7 @@ const express                   = require('express');
 const { handleIncomingMessage } = require('./handlers/messageHandler');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 let qrImageUrl = null;
 let readyAt = null;
 
@@ -18,8 +19,10 @@ app.get('/qr', async (req, res) => {
   res.send(`<img src="${qrImageUrl}" style="width:300px"/>`);
 });
 
-app.listen(3000, () => {
-  console.log('[Server] QR disponible en http://localhost:3000/qr');
+
+
+app.listen(PORT, () => {
+  console.log(`[Server] QR disponible en http://localhost:${PORT}/qr`);
 });
 
 const client = new Client({
