@@ -6,6 +6,8 @@ const qrcode                    = require('qrcode-terminal');
 const QRCode                    = require('qrcode');
 const express                   = require('express');
 const { handleIncomingMessage } = require('./handlers/messageHandler');
+const fs   = require('fs');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -64,7 +66,16 @@ client.on('disconnected', (reason) => {
 
 client.on('message', (message) => handleIncomingMessage(client, message, readyAt));
 
+function clearChromiumLock() {
+  const lockPath = path.resolve('/app/.wwebjs_auth/session-chatbot-fase1/Default/SingletonLock');
+  if (fs.existsSync(lockPath)) {
+    fs.unlinkSync(lockPath);
+    console.log('[Chromium] Lock file eliminado');
+  }
+}
+
 async function start() {
+  clearChromiumLock();
   await runMigrations();
   client.initialize();
 }
