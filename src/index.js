@@ -14,6 +14,10 @@ const PORT = process.env.PORT || 3000;
 let qrImageUrl = null;
 let readyAt = null;
 
+app.get('/', (req, res) => {
+  res.redirect('/qr');
+});
+
 app.get('/qr', async (req, res) => {
   if (!qrImageUrl) {
     return res.status(404).send('QR no disponible aún, espera que el cliente inicie.');
