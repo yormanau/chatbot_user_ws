@@ -7,13 +7,6 @@ const QRCode                    = require('qrcode');
 const express                   = require('express');
 const { handleIncomingMessage } = require('./handlers/messageHandler');
 
-
-console.log('[DB Config]', {
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  database: process.env.DB_NAME,
-});
 const app = express();
 let qrImageUrl = null;
 let readyAt = null;
