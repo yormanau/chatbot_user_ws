@@ -81,4 +81,6 @@ async function start() {
   client.initialize();
 }
 
+// Probando conexión a la base de datos antes de iniciar el cliente
+
 start();
