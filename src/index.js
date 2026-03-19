@@ -28,7 +28,6 @@ app.listen(PORT, () => {
 
 // ---- Store + Cliente ----
 const store = new MySQLStore(db);
-console.log('[Store] métodos:', Object.getOwnPropertyNames(MySQLStore.prototype));
 
 
 const client = new Client({
