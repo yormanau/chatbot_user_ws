@@ -9,7 +9,9 @@ async function loadModule(containerId, file) {
 }
 
 async function init() {
-  await loadModule('app', 'qr.html');
+  await loadModule('topbar', 'topbar.html');
+  await loadModule('qr-section', 'qr.html');
+
   initQR();
 }
 

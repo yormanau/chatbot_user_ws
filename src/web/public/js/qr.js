@@ -18,9 +18,6 @@ function initQR() {
   const disconnectedView = document.getElementById('disconnected-view');
   const statusName = document.getElementById('status-name');
 
-
-
-
   async function fetchStatus() {
     try {
       const res  = await fetch('/api/status');
@@ -33,15 +30,10 @@ function initQR() {
 
   function updateUI({ connected, qr, secondsLeft: sLeft, botName }) {
     if (connected) {
-      // statusDot.className    = 'status-dot connected';
-      // btnConnect.disabled    = true;
-      // statusText.textContent = botName 
-      // ? `Bienvenido, ${botName} ✅` 
-      // : 'Bot conectado';
 
       statusDot.className    = 'status-dot connected';
       statusName.textContent = botName ? `Bienvenido, ${botName} ✅.  ` : 'Conectado';
-      statusText.textContent = '(conectado)';
+      statusText.textContent = '(Conectado)';
       btnConnect.disabled    = true;
       connectedView.hidden    = false;
       disconnectedView.hidden = true;
