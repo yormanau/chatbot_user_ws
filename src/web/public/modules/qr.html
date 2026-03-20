@@ -1,4 +1,4 @@
-<div class="card">
+<!-- <div class="card">
   <div class="card-header">
     <h1 class="title">ChatBot WhatsApp</h1>
     <p class="subtitle">Panel de administración</p>
@@ -27,6 +27,46 @@
         <span class="timer" id="timer">60</span>
         <span class="timer-label">segundos</span>
     </div>
+      <div class="timer-bar-track">
+        <div class="timer-bar" id="timer-bar"></div>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<div class="topbar">
+  <div class="topbar-status">
+    <span class="status-dot" id="status-dot"></span>
+    <div class="topbar-info">
+      <span class="topbar-name" id="status-name"></span>
+      <span class="topbar-sub" id="status-text">Verificando...</span>
+    </div>
+  </div>
+</div>
+
+<div class="main-content" id="main-content">
+  <div class="disconnected-view" id="disconnected-view">
+    <p class="hint">El bot está desconectado. Escanea el QR para conectarte.</p>
+    <button class="btn-connect" id="btn-connect" disabled>Conectar WhatsApp</button>
+  </div>
+  <div class="connected-view" id="connected-view" hidden>
+    <p class="hint">El bot está activo y escuchando mensajes.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal" hidden>
+  <div class="modal">
+    <div class="modal-header">
+      <span>Escanea el código QR</span>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <img id="qr-img" src="" alt="QR Code"/>
+      <div class="timer-row">
+        <span class="timer-label">Expira en</span>
+        <span class="timer" id="timer">60</span>
+        <span class="timer-label">segundos</span>
+      </div>
       <div class="timer-bar-track">
         <div class="timer-bar" id="timer-bar"></div>
       </div>

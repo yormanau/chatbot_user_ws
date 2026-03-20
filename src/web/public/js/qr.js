@@ -14,6 +14,12 @@ function initQR() {
   const timerBar   = document.getElementById('timer-bar');
   const modalBody  = document.querySelector('.modal-body');
   const timer = document.getElementById('timer');
+  const connectedView    = document.getElementById('connected-view');
+  const disconnectedView = document.getElementById('disconnected-view');
+  const statusName = document.getElementById('status-name');
+
+
+
 
   async function fetchStatus() {
     try {
@@ -27,11 +33,18 @@ function initQR() {
 
   function updateUI({ connected, qr, secondsLeft: sLeft, botName }) {
     if (connected) {
+      // statusDot.className    = 'status-dot connected';
+      // btnConnect.disabled    = true;
+      // statusText.textContent = botName 
+      // ? `Bienvenido, ${botName} ✅` 
+      // : 'Bot conectado';
+
       statusDot.className    = 'status-dot connected';
+      statusName.textContent = botName ? `Bienvenido, ${botName} ✅.  ` : 'Conectado';
+      statusText.textContent = '(conectado)';
       btnConnect.disabled    = true;
-      statusText.textContent = botName 
-      ? `Bienvenido, ${botName} ✅` 
-      : 'Bot conectado';
+      connectedView.hidden    = false;
+      disconnectedView.hidden = true;
 
       if (!modal.hidden && !closingModal) {
         closingModal = true;
@@ -41,24 +54,6 @@ function initQR() {
         timerBar.parentElement.style.display = 'none';
         document.querySelector('.timer-row').style.display = 'none'; 
 
-        // const msg = document.createElement('div');
-        // msg.id    = 'success-msg';
-        // msg.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 0;';
-        // msg.innerHTML = `
-        //   <div style="font-size:48px">✅</div>
-        //   <p style="font-weight:600;font-size:16px;color:var(--text)">¡Conectado correctamente!</p>
-        //   <p style="font-size:13px;color:var(--muted)">Cerrando en 3 segundos...</p>
-        // `;
-        // modalBody.appendChild(msg);
-
-        // setTimeout(() => {
-        //   closeModal();
-        //   msg.remove();
-        //   qrImg.style.display              = '';
-        //   timerBar.parentElement.style.display = '';
-        //   document.querySelector('.timer-row').style.display = '';
-        //   closingModal = false;
-        // }, 3000);
         const msg = document.createElement('div');
         msg.id    = 'success-msg';
         msg.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 0;';
@@ -87,9 +82,12 @@ function initQR() {
 
       }
     } else {
-      statusDot.className    = 'status-dot disconnected';
-      statusText.textContent = 'Bot desconectado';
-      btnConnect.disabled    = false;
+      statusDot.className     = 'status-dot disconnected';
+      statusName.textContent  = 'Sin conexión';
+      statusText.textContent  = '';
+      btnConnect.disabled     = false;
+      connectedView.hidden    = true;
+      disconnectedView.hidden = false;
 
       if (!modal.hidden && qr && qr !== lastQR) {
         lastQR    = qr;
