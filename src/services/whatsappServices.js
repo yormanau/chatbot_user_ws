@@ -16,6 +16,9 @@ function getIsConnected() { return isConnected; }
 function getQRImageUrl() { return qrImageUrl; }
 function getClient()     { return client; }
 const isLocal = process.env.NODE_ENV !== 'production' && !process.env.RAILWAY_ENVIRONMENT;
+function getBotName() {
+  return client?.info?.pushname || null;
+}
 
 function initWhatsApp() {
   const store = new MySQLStore(db);
@@ -86,6 +89,8 @@ function initWhatsApp() {
   client.on('message', (msg) => handleIncomingMessage(client, msg, readyAt));
 
   client.initialize();
+
+  
 }
 
-module.exports = { initWhatsApp, getQRImageUrl, getQRCreatedAt, getClient, getIsConnected };
+module.exports = { initWhatsApp, getQRImageUrl, getQRCreatedAt, getClient, getIsConnected, getBotName };

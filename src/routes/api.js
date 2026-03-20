@@ -1,6 +1,6 @@
 const express = require('express');
 const router  = express.Router();
-const { getQRImageUrl, getQRCreatedAt, getIsConnected } = require('../services/whatsappServices');
+const { getQRImageUrl, getQRCreatedAt, getIsConnected, getBotName } = require('../services/whatsappServices');
 
 const QR_TTL = 60;
 
@@ -13,7 +13,7 @@ router.get('/status', (req, res) => {
     ? Math.max(0, QR_TTL - Math.floor((Date.now() - createdAt) / 1000))
     : 0;
 
-  res.json({ connected, qr: connected ? null : qr, secondsLeft });
+  res.json({ connected, qr: connected ? null : qr, secondsLeft, botName: getBotName()   });
 });
 
 module.exports = router;

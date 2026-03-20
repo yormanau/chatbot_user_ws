@@ -25,37 +25,66 @@ function initQR() {
     }
   }
 
-  function updateUI({ connected, qr, secondsLeft: sLeft }) {
+  function updateUI({ connected, qr, secondsLeft: sLeft, botName }) {
     if (connected) {
       statusDot.className    = 'status-dot connected';
-      statusText.textContent = 'Bot conectado';
       btnConnect.disabled    = true;
+      statusText.textContent = botName 
+      ? `Bienvenido, ${botName} ✅` 
+      : 'Bot conectado';
 
       if (!modal.hidden && !closingModal) {
         closingModal = true;
         stopTimer();
-
         // Mostrar mensaje de éxito
         qrImg.style.display              = 'none';
         timerBar.parentElement.style.display = 'none';
+        document.querySelector('.timer-row').style.display = 'none'; 
 
+        // const msg = document.createElement('div');
+        // msg.id    = 'success-msg';
+        // msg.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 0;';
+        // msg.innerHTML = `
+        //   <div style="font-size:48px">✅</div>
+        //   <p style="font-weight:600;font-size:16px;color:var(--text)">¡Conectado correctamente!</p>
+        //   <p style="font-size:13px;color:var(--muted)">Cerrando en 3 segundos...</p>
+        // `;
+        // modalBody.appendChild(msg);
+
+        // setTimeout(() => {
+        //   closeModal();
+        //   msg.remove();
+        //   qrImg.style.display              = '';
+        //   timerBar.parentElement.style.display = '';
+        //   document.querySelector('.timer-row').style.display = '';
+        //   closingModal = false;
+        // }, 3000);
         const msg = document.createElement('div');
         msg.id    = 'success-msg';
         msg.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 0;';
         msg.innerHTML = `
           <div style="font-size:48px">✅</div>
           <p style="font-weight:600;font-size:16px;color:var(--text)">¡Conectado correctamente!</p>
-          <p style="font-size:13px;color:var(--muted)">Cerrando en 3 segundos...</p>
+          <p style="font-size:13px;color:var(--muted)">Cerrando en <span id="countdown">3</span> segundos...</p>
         `;
         modalBody.appendChild(msg);
 
-        setTimeout(() => {
-          closeModal();
-          msg.remove();
-          qrImg.style.display              = '';
-          timerBar.parentElement.style.display = '';
-          closingModal = false;
-        }, 3000);
+        let count = 3;
+        const countdown = setInterval(() => {
+          count--;
+          const span = document.getElementById('countdown');
+          if (span) span.textContent = count;
+          if (count <= 0) {
+            clearInterval(countdown);
+            closeModal();
+            msg.remove();
+            qrImg.style.display                                = '';
+            timerBar.parentElement.style.display               = '';
+            document.querySelector('.timer-row').style.display = '';
+            closingModal = false;
+          }
+        }, 1000);
+
       }
     } else {
       statusDot.className    = 'status-dot disconnected';
