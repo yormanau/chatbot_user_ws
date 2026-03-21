@@ -1,5 +1,6 @@
 const { existsByPhone, registerUser } = require('../repositories/userRepository');
 const { notifyBot }                   = require('../services/notificationService');
+const { io } = require('../index'); 
 
 /**
  * Procesa cada mensaje entrante:
@@ -11,7 +12,8 @@ const { notifyBot }                   = require('../services/notificationService
  * @param {import('whatsapp-web.js').Message} message
  */
 
-async function handleIncomingMessage(client, message, readyAt) {
+async function handleIncomingMessage(client, message, readyAt, io) {
+    console.log('[Handler] io recibido:', !!io); // ← agrega esto
   try {
     if (message.from.endsWith('@g.us') || message.fromMe) return;
 
@@ -37,6 +39,7 @@ async function handleIncomingMessage(client, message, readyAt) {
     if (registrado) {
       console.log(`[Handler] Usuario registrado: ${nombre} (${telefono})`);
       await notifyBot(client, telefono, nombre);
+      io.emit('user-registered', { nombre, telefono });
     } else {
       console.error(`[Handler] Fallo al registrar: ${telefono}`);
     }

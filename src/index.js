@@ -1,14 +1,16 @@
 require('dotenv').config();
 const express            = require('express');
+const { createServer }   = require('http');
+const { Server }         = require('socket.io');
 const { runMigrations }  = require('./config/migrate');
 const { initWhatsApp }   = require('./services/whatsappServices');
 const webRoutes          = require('./routes/web');
-const apiRoutes = require('./routes/api');
+const apiRoutes          = require('./routes/api');
 
+const app        = express();
+const httpServer = createServer(app);
+const io         = new Server(httpServer, { cors: { origin: '*' } });
 
-
-
-const app  = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
@@ -36,10 +38,12 @@ process.on('unhandledRejection', (reason) => {
 
 async function start() {
   await runMigrations();
-  initWhatsApp();
-  app.listen(PORT, () => {
+  initWhatsApp(io);
+  httpServer.listen(PORT, () => {   // ← httpServer en lugar de app
     console.log(`[Server] Corriendo en puerto ${PORT}`);
   });
 }
+
+module.exports = { io };  // ← exporta io para usarlo en otros archivos
 
 start();

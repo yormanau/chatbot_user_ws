@@ -20,7 +20,9 @@ function getBotName() {
   return client?.info?.pushname || null;
 }
 
-function initWhatsApp() {
+function initWhatsApp(io) {
+    console.log('[WhatsApp] io recibido:', !!io); // ← agrega esto
+
   const store = new MySQLStore(db);
 
   client = new Client({
@@ -86,7 +88,7 @@ function initWhatsApp() {
     console.warn('[WhatsApp] Desconectado:', reason);
   });
 
-  client.on('message', (msg) => handleIncomingMessage(client, msg, readyAt));
+  client.on('message', (msg) => handleIncomingMessage(client, msg, readyAt, io)); // ← pasa io
 
   client.initialize();
 

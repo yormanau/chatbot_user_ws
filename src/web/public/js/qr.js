@@ -4,7 +4,7 @@ let secondsLeft   = QR_DURATION;
 let lastQR        = null;
 let closingModal  = false;
 
-function initQR() {
+export function initQR() {
   const statusDot  = document.getElementById('status-dot');
   const statusText = document.getElementById('status-text');
   const btnConnect = document.getElementById('btn-connect');
