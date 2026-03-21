@@ -30,7 +30,6 @@ export function initQR() {
 
   function updateUI({ connected, qr, secondsLeft: sLeft, botName }) {
     if (connected) {
-
       statusDot.className    = 'status-dot connected';
       statusName.textContent = botName ? `Bienvenido, ${botName} ✅.  ` : 'Conectado';
       statusText.textContent = '(Conectado)';
@@ -41,7 +40,6 @@ export function initQR() {
       if (!modal.hidden && !closingModal) {
         closingModal = true;
         stopTimer();
-        // Mostrar mensaje de éxito
         qrImg.style.display              = 'none';
         timerBar.parentElement.style.display = 'none';
         document.querySelector('.timer-row').style.display = 'none'; 
@@ -69,13 +67,15 @@ export function initQR() {
             timerBar.parentElement.style.display               = '';
             document.querySelector('.timer-row').style.display = '';
             closingModal = false;
-            document.getElementById('analytics-section').hidden = false;
+            document.getElementById('analytics-section').hidden = false; // ← después del modal
           }
         }, 1000);
-        
+
+      } else if (modal.hidden) {
+        document.getElementById('analytics-section').hidden = false; // ← ya logueado
       }
-      
-    } else {
+
+    } else { // ← este else es del if (connected)
       statusDot.className     = 'status-dot disconnected';
       statusName.textContent  = 'Sin conexión';
       statusText.textContent  = '';
@@ -83,6 +83,7 @@ export function initQR() {
       connectedView.hidden    = true;
       disconnectedView.hidden = false;
       document.getElementById('analytics-section').hidden = true;
+
       if (!modal.hidden && qr && qr !== lastQR) {
         lastQR    = qr;
         qrImg.src = qr;
