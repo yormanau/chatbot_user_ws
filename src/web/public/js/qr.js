@@ -69,10 +69,12 @@ export function initQR() {
             timerBar.parentElement.style.display               = '';
             document.querySelector('.timer-row').style.display = '';
             closingModal = false;
+            document.getElementById('analytics-section').hidden = false;
           }
         }, 1000);
-
+        
       }
+      
     } else {
       statusDot.className     = 'status-dot disconnected';
       statusName.textContent  = 'Sin conexión';
@@ -80,7 +82,7 @@ export function initQR() {
       btnConnect.disabled     = false;
       connectedView.hidden    = true;
       disconnectedView.hidden = false;
-
+      document.getElementById('analytics-section').hidden = true;
       if (!modal.hidden && qr && qr !== lastQR) {
         lastQR    = qr;
         qrImg.src = qr;
