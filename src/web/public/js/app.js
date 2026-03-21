@@ -1,5 +1,7 @@
 import { showToast } from "./toast.js";
 import { initQR } from "./qr.js";
+import { initAnalytics } from './analytics.js';
+
 import { io } from 'https://cdn.socket.io/4.7.5/socket.io.esm.min.js';
 
 const socket = io();
@@ -35,7 +37,9 @@ async function init() {
   await loadModule('topbar', 'topbar.html');
   await loadModule('qr-section', 'qr.html');
   await loadModule('toast-wrapper', 'toast.html');
+  await loadModule('analytics-section', 'analytics_dashboard.html');
 
+  initAnalytics();
 
   initQR();
 }

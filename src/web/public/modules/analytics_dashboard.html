@@ -1,0 +1,79 @@
+<div class="analytics-dashboard">
+
+  <!-- Card principal -->
+  <div class="analytics-card">
+    <div class="analytics-card__left">
+      <div class="analytics-card__header">
+        <span class="analytics-card__icon">👥</span>
+        <span class="analytics-card__label">Usuarios</span>
+      </div>
+      <div class="analytics-card__total" id="analytics-total">—</div>
+      <div class="analytics-card__sublabel">Total registrados</div>
+
+      <div class="analytics-legend">
+        <div class="analytics-legend__item">
+          <span class="analytics-legend__dot analytics-legend__dot--today"></span>
+          <span class="analytics-legend__text">Hoy</span>
+          <span class="analytics-legend__value" id="legend-today">—</span>
+        </div>
+        <div class="analytics-legend__item">
+          <span class="analytics-legend__dot analytics-legend__dot--week"></span>
+          <span class="analytics-legend__text">Esta semana</span>
+          <span class="analytics-legend__value" id="legend-week">—</span>
+        </div>
+        <div class="analytics-legend__item">
+          <span class="analytics-legend__dot analytics-legend__dot--month"></span>
+          <span class="analytics-legend__text">Este mes</span>
+          <span class="analytics-legend__value" id="legend-month">—</span>
+        </div>
+      </div>
+
+      <div class="analytics-filter-row">
+        <select id="analytics-select" class="analytics-select">
+          <option value="all">Todos</option>
+          <option value="today">Hoy</option>
+          <option value="week">Esta semana</option>
+          <option value="month">Este mes</option>
+          <option value="custom" disabled>Personalizado (próximamente)</option>
+        </select>
+        <button class="analytics-filter-btn" id="analytics-filter-btn">Filtrar</button>
+      </div>
+    </div>
+
+    <div class="analytics-card__right">
+      <canvas id="analytics-chart" width="160" height="160"></canvas>
+    </div>
+  </div>
+
+  <!-- Card de resultados -->
+  <div class="analytics-results" id="analytics-results" hidden>
+    <div class="analytics-results__header">
+      <span class="analytics-results__title" id="analytics-results-title">Usuarios</span>
+      <button class="analytics-results__close" id="analytics-results-close">✕</button>
+    </div>
+    <div class="analytics-results__body">
+      <table class="analytics-table">
+        <thead>
+          <tr>
+            <th>
+              <button class="sort-btn" data-sort="name" data-dir="ASC">
+                Nombre <span class="sort-icon">↑</span>
+              </button>
+            </th>
+            <th>Teléfono</th>
+            <th>
+              <button class="sort-btn" data-sort="create_at" data-dir="ASC">
+                Fecha de registro <span class="sort-icon">↑</span>
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody id="analytics-table-body"></tbody>
+      </table>
+      <div class="analytics-results__empty" id="analytics-results-empty" hidden>
+        Sin usuarios en este período
+      </div>
+    </div>
+  </div>
+
+</div>
