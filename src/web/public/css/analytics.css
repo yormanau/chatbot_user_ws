@@ -223,17 +223,22 @@
 
 
 .btn-ver-tabla {
+  margin-top: 12px;
   width: 100%;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 16px 20px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--text);
   cursor: pointer;
   text-align: left;
   transition: border-color 0.2s, background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 60px;
 }
 
 .btn-ver-tabla:hover {
@@ -477,6 +482,7 @@
   color: var(--text);
   outline: none;
   transition: border-color 0.2s;
+  font-size: 16px;
 }
 
 .tabla-search__input:focus {
@@ -485,4 +491,22 @@
 
 .tabla-search__input::placeholder {
   color: var(--muted);
+}
+
+input, select, textarea {
+  font-size: 16px;
+}
+
+.tabla-row-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  display: block;
+  margin: 0 auto;
+}
+
+.tabla-panel__body .analytics-table th:last-child,
+.tabla-panel__body .analytics-table td:last-child {
+  text-align: center;
 }

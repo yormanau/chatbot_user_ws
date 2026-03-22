@@ -48,11 +48,16 @@ document.addEventListener('click', () => {
   audio.play().catch(() => {});
 }, { once: true }); // ← once: true para que solo se ejecute una vez
 
+
 async function init() {
 
   await loadModule('topbar', 'topbar.html');
+  document.getElementById('btn-logout').addEventListener('click', async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    window.location.href = '/login';
+  });
+  
   await loadModule('qr-section', 'qr.html');
-  await loadModule('toast-wrapper', 'toast.html');
   await loadModule('analytics-section', 'analytics_dashboard.html');
   await initAnalytics();
   initQR();

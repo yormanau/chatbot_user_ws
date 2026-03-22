@@ -1,0 +1,260 @@
+.perfil-topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: var(--accent);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 50;
+}
+
+.perfil-back {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.perfil-back:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.perfil-topbar__title {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.perfil-content {
+  padding: 80px 24px 24px;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.perfil-loading {
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 40px 0;
+}
+
+/* ── Avatar card ── */
+.perfil-avatar-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fadeUp 0.3s ease both;
+}
+
+.perfil-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #fff;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.perfil-avatar-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.perfil-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1;
+}
+
+.perfil-phone {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ── Info card ── */
+.perfil-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  animation: fadeUp 0.3s ease both;
+  animation-delay: 0.05s;
+}
+
+.perfil-card__header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.perfil-card__body {
+  padding: 4px 0;
+}
+
+.perfil-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+
+.perfil-row:last-child {
+  border-bottom: none;
+}
+
+.perfil-row__label {
+  font-size: 13px;
+  color: var(--muted);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.perfil-row__value {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+}
+
+/* ── Empty state ── */
+.perfil-empty {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  animation: fadeUp 0.3s ease both;
+  animation-delay: 0.1s;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Edit inline ── */
+.perfil-row {
+  position: relative;
+}
+
+.perfil-row__edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.2s;
+  flex-shrink: 0;
+  /* ← siempre visible en mobile */
+  opacity: 1;
+}
+
+.perfil-row:hover .perfil-row__edit-btn {
+  opacity: 1;
+}
+
+.perfil-row__edit-btn:hover {
+  color: var(--accent);
+}
+
+/* ── Edit mode ── */
+.perfil-row--editing .perfil-row__value {
+  display: none;
+}
+
+.perfil-row--editing .perfil-row__edit-btn {
+  display: none;
+}
+
+.perfil-row__edit-group {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.perfil-row--editing .perfil-row__edit-group {
+  display: flex;
+}
+
+.perfil-row__input {
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 16px;
+  color: var(--text);
+  outline: none;
+  width: 160px;
+}
+
+.perfil-row__confirm {
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.perfil-row__confirm:hover {
+  background: var(--accent-h);
+}
+
+.perfil-row__cancel {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.perfil-row__cancel:hover {
+  background: var(--border);
+}

@@ -24,4 +24,8 @@ router.get('/qr', (req, res) => {
   res.send(`<img src="${qrImageUrl}" style="width:300px"/>`);
 });
 
+router.get('/perfil', requireAuth, (req, res) => {
+  res.sendFile(path.resolve('src/web/public/perfil.html'));
+});
+
 module.exports = router;

@@ -1,7 +1,6 @@
 <div class="analytics-dashboard">
 
   <div class="analytics-card" id="analytics-card">
-    <!-- Siempre visible -->
     <div class="analytics-card__summary" id="analytics-summary">
       <div class="analytics-card__header">
         <span class="analytics-card__icon">👥</span>
@@ -11,7 +10,6 @@
       <button class="analytics-card__toggle" id="analytics-toggle">+</button>
     </div>
 
-    <!-- Desplegable -->
     <div class="analytics-card__body" id="analytics-body" hidden>
       <div class="analytics-legend">
         <div class="analytics-legend__item">
@@ -34,82 +32,11 @@
   </div>
 
   <button class="btn-ver-tabla" id="btn-ver-tabla">
-    👥 Ver tabla de usuarios
+    <span class="analytics-card__icon">👤</span>
+    <span>Ver tabla de usuarios</span>
   </button>
 
+  <!-- ← solo esto, el componente genera el resto -->
+  <div class="tabla-panel" id="tabla-panel" hidden></div>
 
-<div class="tabla-panel" id="tabla-panel" hidden>
-  <div class="tabla-panel__header">
-    <span class="tabla-panel__title">Tabla de usuarios</span>
-      <button class="tabla-panel__close" id="tabla-panel-close">✕</button>
-    
-  </div>
-
-  <!-- Buscador ← agrega aquí -->
-  <div class="tabla-search">
-    <input type="text" id="tabla-search-input" class="tabla-search__input" placeholder="🔍  Buscar nombre o teléfono...">
-    <button class="tabla-panel__filter-btn" id="tabla-filter-btn">⚙️</button>
-  </div>
-
-  <!-- Modal de filtros -->
-  <div class="tabla-filter-modal" id="tabla-filter-modal" hidden>
-    <div class="tabla-filter-modal__body">
-      <label class="tabla-filter-check">
-        <input type="checkbox" id="show-date" checked>
-        <span>Mostrar fecha de registro</span>
-      </label>
-      <div class="tabla-filter-field">
-        <span class="tabla-filter-label">Rango de fechas</span>
-        <select id="tabla-filter-range" class="analytics-select">
-          <option value="all">Todos</option>
-          <option value="today">Hoy</option>
-          <option value="week">Esta semana</option>
-          <option value="month">Este mes</option>
-        </select>
-      </div>
-      <div class="tabla-filter-field">
-        <span class="tabla-filter-label">Filas por página</span>
-        <select id="tabla-limit" class="analytics-select">
-          <option value="10">10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-        </select>
-      </div>
-      
-    </div>
-  </div>
-
-  
-
-  <div class="tabla-panel__body">
-    <table class="analytics-table" id="tabla-table">
-      <thead>
-        <tr>
-          <th>
-            <button class="sort-btn" data-sort="name" data-dir="ASC">
-              Nombre <span class="sort-icon">↑</span>
-            </button>
-          </th>
-          <th>Teléfono</th>
-          <th id="col-fecha">
-            <button class="sort-btn" data-sort="create_at" data-dir="ASC">
-              Fecha <span class="sort-icon">↑</span>
-            </button>
-          </th>
-        </tr>
-      </thead>
-      <tbody id="tabla-body"></tbody>
-    </table>
-    <div class="analytics-results__empty" id="tabla-empty" hidden>
-      Sin usuarios registrados
-    </div>
-  </div>
-
-  <!-- Paginación -->
-  <div class="tabla-pagination" id="tabla-pagination">
-    <button class="tabla-pagination__btn" id="tabla-prev">←</button>
-    <div class="tabla-pagination__pages" id="tabla-pages"></div>
-    <button class="tabla-pagination__btn" id="tabla-next">→</button>
-  </div>
-</div>
 </div>
