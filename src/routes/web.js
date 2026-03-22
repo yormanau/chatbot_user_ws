@@ -2,7 +2,17 @@ const express = require('express');
 const router  = express.Router();
 const { getQRImageUrl } = require('../services/whatsappServices');
 const path = require('path');
-router.get('/', (req, res) => {
+
+function requireAuth(req, res, next) {
+  if (req.cookies?.auth === process.env.APP_PIN) return next();
+  res.redirect('/login');
+}
+
+router.get('/login', (req, res) => {
+  res.sendFile(path.resolve('src/web/public/login.html'));
+});
+
+router.get('/', requireAuth, (req, res) => {
   res.sendFile(path.resolve('src/web/public/index.html'));
 });
 

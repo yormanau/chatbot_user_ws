@@ -6,6 +6,7 @@ const { runMigrations }  = require('./config/migrate');
 const { initWhatsApp }   = require('./services/whatsappServices');
 const webRoutes          = require('./routes/web');
 const apiRoutes          = require('./routes/api');
+const cookieParser       = require('cookie-parser');
 
 const app        = express();
 const httpServer = createServer(app);
@@ -13,6 +14,7 @@ const io         = new Server(httpServer, { cors: { origin: '*' } });
 
 const PORT = process.env.PORT || 3000;
 
+app.use(cookieParser());
 app.use(express.json());
 app.use('/', webRoutes);
 app.use('/api', apiRoutes);
@@ -37,11 +39,15 @@ process.on('unhandledRejection', (reason) => {
 });
 
 async function start() {
-  await runMigrations();
-  initWhatsApp(io);
-  httpServer.listen(PORT, () => {   // ← httpServer en lugar de app
-    console.log(`[Server] Corriendo en puerto ${PORT}`);
-  });
+  try {
+    await runMigrations();
+    initWhatsApp(io);
+    httpServer.listen(PORT, () => {
+      console.log(`[Server] Corriendo en puerto ${PORT}`);
+    });
+  } catch (err) {
+    console.error('[Server] Error al iniciar:', err);
+  }
 }
 
 module.exports = { io };  // ← exporta io para usarlo en otros archivos

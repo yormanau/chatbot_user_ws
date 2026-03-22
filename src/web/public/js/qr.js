@@ -67,12 +67,9 @@ export function initQR() {
             timerBar.parentElement.style.display               = '';
             document.querySelector('.timer-row').style.display = '';
             closingModal = false;
-            document.getElementById('analytics-section').hidden = false; // ← después del modal
           }
         }, 1000);
 
-      } else if (modal.hidden) {
-        document.getElementById('analytics-section').hidden = false; // ← ya logueado
       }
 
     } else { // ← este else es del if (connected)
@@ -82,7 +79,6 @@ export function initQR() {
       btnConnect.disabled     = false;
       connectedView.hidden    = true;
       disconnectedView.hidden = false;
-      document.getElementById('analytics-section').hidden = true;
 
       if (!modal.hidden && qr && qr !== lastQR) {
         lastQR    = qr;
