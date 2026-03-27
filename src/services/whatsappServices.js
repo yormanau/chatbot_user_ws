@@ -7,6 +7,7 @@ const db                     = require('../config/database');
 const fs   = require('fs');
 const path = require('path');
 
+let manualStop = false;
 let isUnauthorized = false; 
 let ioInstance = null; 
 let qrImageUrl = null;
@@ -25,6 +26,10 @@ function getBotName() {
 }
 
 function initWhatsApp(io) {
+  if (client) {
+    console.warn('[WhatsApp] Ya hay una instancia corriendo, ignorando initWhatsApp');
+    return;
+  }
   ioInstance = io; // ← guarda la instancia de io para usarla en restartWhatsApp
   const store = new MySQLStore(db);
 
@@ -42,7 +47,10 @@ function initWhatsApp(io) {
         '--no-sandbox', '--disable-setuid-sandbox',
         '--disable-dev-shm-usage', '--disable-gpu',
         '--no-first-run', '--no-zygote', '--single-process',
+        '--disable-session-crashed-bubble', // ← ignora crashes anteriores
+        '--disable-infobars',
       ],
+      userDataDir: undefined, // ← deja que LocalAuth lo maneje
     },
   });
 
@@ -105,13 +113,18 @@ function initWhatsApp(io) {
     console.warn('[WhatsApp] Desconectado:', reason);
 
     if (isUnauthorized) {
-      isUnauthorized = false; // ← resetea el flag
-      console.log('[WhatsApp] Desconectado por número no autorizado, no reintentar');
-      return; // ← no reinicia
+      isUnauthorized = false;
+      return;
+    }
+
+    if (manualStop) {
+      manualStop = false; // ← resetea para próximas conexiones
+      return;
     }
 
     setTimeout(() => {
       console.log('[WhatsApp] Reintentando conexión...');
+      client = null; // ← limpia antes de reiniciar
       initWhatsApp(ioInstance);
     }, 5000);
   });
@@ -121,6 +134,43 @@ function initWhatsApp(io) {
   client.initialize();
 
   
+}
+
+async function stopWhatsApp() {
+  if (!client) return;
+  manualStop = true;
+  isUnauthorized = false;
+
+  try {
+    await client.logout();
+  } catch {}
+
+  try {
+    client.removeAllListeners();
+    await client.destroy();
+  } catch {}
+
+  client      = null;
+  qrImageUrl  = null;
+  qrCreatedAt = null;
+  isConnected = false;
+  readyAt     = null;
+  if (isLocal) {
+    const authPath  = path.join(process.cwd(), '.wwebjs_auth');
+    const cachePath = path.join(process.cwd(), '.wwebjs_cache');
+    if (fs.existsSync(authPath))  fs.rmSync(authPath,  { recursive: true, force: true });
+    if (fs.existsSync(cachePath)) fs.rmSync(cachePath, { recursive: true, force: true });
+    console.log('[WhatsApp] Carpetas de sesión eliminadas');
+  } else {
+    try {
+      const store = new MySQLStore(db);
+      await store.delete('RemoteAuth-chatbot');
+      console.log('[WhatsApp] Sesión eliminada de MySQL');
+    } catch {}
+  }
+
+  if (ioInstance) ioInstance.emit('whatsapp-stopped');
+  console.log('[WhatsApp] Sesión cerrada y lista para nuevo QR');
 }
 
 function restartWhatsApp() {
@@ -150,4 +200,21 @@ function restartWhatsApp() {
   initWhatsApp(ioInstance);
 }
 
-module.exports = { initWhatsApp, getQRImageUrl, getQRCreatedAt, getClient, getIsConnected, getBotName, restartWhatsApp };
+async function checkExistingSession() {
+  if (isLocal) {
+    // En local verifica si existe la carpeta de auth
+    const authPath = path.join(process.cwd(), '.wwebjs_auth');
+    return fs.existsSync(authPath);
+  } else {
+    // En producción verifica si existe la sesión en MySQL
+    try {
+      const store = new MySQLStore(db);
+      const session = await store.extract('RemoteAuth-chatbot');
+      return !!session;
+    } catch {
+      return false;
+    }
+  }
+}
+
+module.exports = { initWhatsApp, getQRImageUrl, getQRCreatedAt, getClient, getIsConnected, getBotName, restartWhatsApp, stopWhatsApp, checkExistingSession };

@@ -1,29 +1,67 @@
-import { showToast } from "./toast.js";
-import { initQR } from "./qr.js";
-import { initAnalytics, refreshAnalytics } from './analytics.js';
+import { showToast }                                       from './toast.js';
+import { initQR }                                          from './qr.js';
+import { initDashboard, refreshAnalytics, refreshInvoiceAnalytics } from './home.js';
+import { initContacts }                                    from './contacts.js';
+import { initPurchases }                                   from './compras.js';
+import { initProducts }                                    from './products.js';
+import { initRegistrarUsuario, abrirFormularioRegistro }   from './register.js';
+import { initAnalytics, refreshAdvAnalytics }               from './analytics.js';
 
 import { io } from 'https://cdn.socket.io/4.7.5/socket.io.esm.min.js';
 
 const socket = io();
 let unauthorized = false;
 
+let reloadContacts  = () => {};
+let reloadPurchases = () => {};
 
 socket.on('user-registered', ({ nombre, telefono }) => {
-  showToast('success', 'Nuevo usuario registrado', `${nombre} (${telefono})`);
+  showToast('success', 'Nuevo contacto registrado', `${nombre} (${telefono})`);
   refreshAnalytics();
+  reloadContacts();
 });
 
+socket.on('invoice-created', () => {
+  refreshInvoiceAnalytics();
+  refreshAdvAnalytics();
+  reloadPurchases();
+});
+
+socket.on('whatsapp-stopped', () => {
+  showToast('success', 'WhatsApp desconectado', 'La sesión fue cerrada correctamente');
+});
 
 socket.on('whatsapp-unauthorized', async () => {
   if (unauthorized) return;
   unauthorized = true;
-  document.getElementById('modal').hidden = true;
+  const modal = document.getElementById('modal');
+  if (modal) modal.hidden = true;
   showToast('error', 'Acceso denegado', 'Este número no está autorizado');
   await fetch('/api/whatsapp/restart', { method: 'POST' });
-  setTimeout(() => unauthorized = false, 3000);
+  setTimeout(() => { unauthorized = false; }, 3000);
 });
 
+// ── Navegación entre secciones ─────────────────────────────────
+const SECTION_TITLES = {
+  dashboard: 'Dashboard',
+  contacts:  'Contactos',
+  purchases: 'Ventas',
+  products:  'Productos',
+  analytics: 'Analítica',
+  whatsapp:  'WhatsApp',
+};
 
+export function navigateTo(sectionId) {
+  Object.keys(SECTION_TITLES).forEach(id => {
+    document.getElementById(`section-${id}`).hidden = (id !== sectionId);
+    document.querySelector(`.sidebar-nav__item[data-section="${id}"]`)
+      ?.classList.toggle('active', id === sectionId);
+  });
+  const titleEl = document.getElementById('topbar-title');
+  if (titleEl) titleEl.textContent = SECTION_TITLES[sectionId] || sectionId;
+}
+
+// ── Carga de módulos HTML ──────────────────────────────────────
 async function loadModule(containerId, file) {
   try {
     const res  = await fetch(`/modules/${file}`);
@@ -33,34 +71,80 @@ async function loadModule(containerId, file) {
     console.error(`[App] Error cargando módulo ${file}:`, e);
   }
 }
-document.addEventListener('keydown', (e) => {
-  if (e.key === 't') {
-    showToast('success', 'Usuario registrado', 'Juan Pérez se registró correctamente');
-  }
-});
 
-
-
-// Desbloquea el audio con la primera interacción del usuario
+// ── Desbloquea audio en primera interacción ────────────────────
 document.addEventListener('click', () => {
   const audio = new Audio('/sounds/positive-notification.wav');
   audio.volume = 0;
   audio.play().catch(() => {});
-}, { once: true }); // ← once: true para que solo se ejecute una vez
-
+}, { once: true });
 
 async function init() {
+  // Topbar
+  await loadModule('topbar-container', 'topbar.html');
 
-  await loadModule('topbar', 'topbar.html');
+  // Secciones en paralelo
+  await Promise.all([
+    loadModule('section-dashboard', 'home.html'),
+    loadModule('section-contacts',  'contacts.html'),
+    loadModule('section-purchases', 'compras.html'),
+    loadModule('section-products',  'products.html'),
+    loadModule('section-analytics', 'analytics.html'),
+    loadModule('section-whatsapp',  'whatsapp.html'),
+  ]);
+
+  // Sidebar: navegación
+  document.querySelectorAll('.sidebar-nav__item[data-section]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      navigateTo(btn.dataset.section);
+      document.getElementById('sidebar').classList.remove('sidebar--open');
+    });
+  });
+
+  // Sidebar: logout
   document.getElementById('btn-logout').addEventListener('click', async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
     window.location.href = '/login';
   });
-  
-  await loadModule('qr-section', 'qr.html');
-  await loadModule('analytics-section', 'analytics_dashboard.html');
+
+  // Mobile: toggle sidebar
+  document.getElementById('sidebar-toggle')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('sidebar').classList.toggle('sidebar--open');
+  });
+  document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar?.classList.contains('sidebar--open') && !sidebar.contains(e.target)) {
+      sidebar.classList.remove('sidebar--open');
+    }
+  });
+
+  // WhatsApp: desconectar
+  document.getElementById('btn-disconnect-wa')?.addEventListener('click', async () => {
+    await fetch('/api/whatsapp/disconnect', { method: 'POST' });
+  });
+
+  // Dashboard: botón nuevo contacto
+  document.getElementById('btn-new-contact-dash')?.addEventListener('click', () => {
+    abrirFormularioRegistro();
+  });
+
+  // Dashboard: ver todos los contactos
+  document.getElementById('btn-ver-contactos')?.addEventListener('click', () => {
+    navigateTo('contacts');
+  });
+
+  // Init módulos
+  await initDashboard();
+  ({ reload: reloadContacts }  = initContacts()  ?? { reload: () => {} });
+  ({ reload: reloadPurchases } = initPurchases() ?? { reload: () => {} });
+  initProducts();
   await initAnalytics();
+  initRegistrarUsuario();
   initQR();
+
+  // Polling de respaldo cada 30 s
+  setInterval(() => { refreshAnalytics(); refreshInvoiceAnalytics(); }, 30_000);
 }
 
 init();

@@ -3,7 +3,7 @@ const express            = require('express');
 const { createServer }   = require('http');
 const { Server }         = require('socket.io');
 const { runMigrations }  = require('./config/migrate');
-const { initWhatsApp }   = require('./services/whatsappServices');
+const { initWhatsApp, checkExistingSession }   = require('./services/whatsappServices');
 const webRoutes          = require('./routes/web');
 const apiRoutes          = require('./routes/api');
 const cookieParser       = require('cookie-parser');
@@ -29,19 +29,18 @@ process.on('uncaughtException', (err) => {
   console.error('[Error crítico]', err);
 });
 
-process.on('unhandledRejection', (reason) => {
-  if (reason?.message?.includes('Execution context was destroyed') ||
-      reason?.message?.includes('Protocol error')) {
-    console.warn('[WhatsApp] Promesa rechazada ignorada');
-    return;
-  }
-  console.error('[Error no manejado]', reason);
-});
 
 async function start() {
   try {
     await runMigrations();
-    initWhatsApp(io);
+
+    // ── Auto-conectar si ya hay sesión guardada ──
+    const hasSession = await checkExistingSession();
+    if (hasSession) {
+      console.log('[WhatsApp] Sesión existente encontrada, conectando automáticamente...');
+      initWhatsApp(io);
+    }
+
     httpServer.listen(PORT, () => {
       console.log(`[Server] Corriendo en puerto ${PORT}`);
     });
@@ -49,6 +48,22 @@ async function start() {
     console.error('[Server] Error al iniciar:', err);
   }
 }
+
+async function shutdown() {
+  console.log('[Server] Cerrando limpiamente...');
+  const { getClient } = require('./services/whatsappServices');
+  const client = getClient();
+  if (client) {
+    try {
+      await client.destroy();
+      console.log('[WhatsApp] Cliente destruido correctamente');
+    } catch {}
+  }
+  process.exit(0);
+}
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
 
 module.exports = { io };  // ← exporta io para usarlo en otros archivos
 

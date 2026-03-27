@@ -28,7 +28,7 @@ export function initTable({
   // ── Estado ──────────────────────────────────────────────
   let sort    = { by: columns.find(c => c.sortable)?.key || '', dir: 'ASC' };
   let page    = 1;
-  let limit = rowsPerPage[0];
+  let limit = rowsPerPage[1] || 10;
   let range   = filters[0]?.value || 'all';
   let search  = '';
   let toggles = {};
@@ -49,7 +49,7 @@ export function initTable({
 
     <div class="tabla-search">
       <input type="text" class="tabla-search__input" placeholder="${searchPlaceholder}" data-action="search">
-      ${filters.length || columns.some(c => c.toggleable)
+      ${filters.length || columns.some(c => c.toggleable) || rowsPerPage.length > 1
         ? `<button class="tabla-panel__filter-btn" data-action="toggle-filters">⚙️</button>`
         : ''}
     </div>
@@ -64,22 +64,26 @@ export function initTable({
         ${filters.length ? `
           <div class="tabla-filter-field">
             <span class="tabla-filter-label">Rango de fechas</span>
-            <select class="analytics-select" data-action="range">
+            <select class="home-select" data-action="range">
               ${filters.map(f => `<option value="${f.value}">${f.label}</option>`).join('')}
             </select>
           </div>
         ` : ''}
         <div class="tabla-filter-field">
           <span class="tabla-filter-label">Filas por página</span>
-          <select class="analytics-select" data-action="limit">
-            ${rowsPerPage.map(n => `<option value="${n}">${n}</option>`).join('')}
+          <select class="home-select" data-action="limit">
+            ${rowsPerPage.map(n => `
+              <option value="${n}" ${n === limit ? 'selected' : ''}>
+                ${n}
+              </option>
+            `).join('')}
           </select>
         </div>
       </div>
     </div>
 
     <div class="tabla-panel__body">
-      <table class="analytics-table" data-table>
+      <table class="home-table" data-table>
         <thead>
           <tr>
             ${columns.map(col => `
@@ -96,7 +100,7 @@ export function initTable({
         </thead>
         <tbody data-body></tbody>
       </table>
-      <div class="analytics-results__empty" data-empty hidden>Sin resultados</div>
+      <div class="home-results__empty" data-empty hidden>Sin resultados</div>
     </div>
 
     <div class="tabla-pagination" data-pagination>
@@ -157,6 +161,9 @@ export function initTable({
             day: '2-digit', month: '2-digit', year: 'numeric'
           });
         }
+        if (col.format && val !== '—') {
+          val = col.format(val);
+        }
         const hidden = col.toggleable && !toggles[col.key] ? 'hidden' : '';
         return `<td ${hidden}>${val}</td>`;
       }).join('');
@@ -168,6 +175,7 @@ export function initTable({
         tr.appendChild(td);
       }
 
+      if (row.id != null) tr.dataset.id = row.id;
       tbody.appendChild(tr);
     });
 

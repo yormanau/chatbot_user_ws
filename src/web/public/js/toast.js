@@ -12,8 +12,8 @@ function showToast(tipo, titulo, mensaje, duration = 4000) {
     document.body.appendChild(template);
   }
 
-  const audio = new Audio('/sounds/positive-notification.wav');
-  audio.play().catch(() => {});
+  // const audio = new Audio('/sounds/positive-notification.wav');
+  // audio.play().catch(() => {});
 
   const template = document.getElementById('toast-template');
 

@@ -142,6 +142,7 @@
   font-weight: 500;
   color: var(--text);
   flex: 1;
+  text-align: right;
 }
 
 /* ── Empty state ── */
@@ -257,4 +258,244 @@
 
 .perfil-row__cancel:hover {
   background: var(--border);
+}
+
+/* ── Collapsible card ── */
+.perfil-card__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  /* hereda los estilos del header */
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: background 0.15s;
+}
+
+.perfil-card__toggle:hover {
+  background: var(--border);
+}
+
+.perfil-card__toggle-icon {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--accent);
+  transition: transform 0.25s;
+  line-height: 1;
+}
+
+/* Cuando está expandido, quita el borde inferior del header */
+.perfil-card__toggle[aria-expanded="false"] {
+  border-bottom-color: transparent;
+}
+
+/* Cuerpo colapsable */
+.perfil-card__body--collapsed {
+  display: none;
+}
+
+/* ── Header con botón ＋ ── */
+.perfil-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.perfil-card__add-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 2px;
+  transition: opacity 0.2s;
+}
+
+.perfil-card__add-btn:hover {
+  opacity: 0.7;
+}
+
+/* ── Fila del select ── */
+.perfil-add-row {
+  padding: 10px 20px;
+  align-items: center;
+}
+
+.perfil-add-select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+
+/* ── Edit group responsive ── */
+.perfil-row--editing {
+  flex-wrap: wrap;
+}
+
+.perfil-row--editing .perfil-row__label {
+  flex: 0 0 100%;
+  margin-bottom: 4px;
+}
+
+.perfil-row--editing .perfil-row__edit-group {
+  flex: 1;
+  width: 100%;
+}
+
+.perfil-row__input {
+  flex: 1;
+  min-width: 0;  /* evita que el input desborde */
+}
+
+.perfil-row__edit-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+/* ── Historial de compras ────────────────────────────────────── */
+.perfil-compras-empty {
+  padding: 24px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.perfil-compra-item {
+  border-bottom: 1px solid var(--border);
+}
+
+.perfil-compra-item:last-child {
+  border-bottom: none;
+}
+
+.perfil-compra-item__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.perfil-compra-item__header:hover {
+  background: var(--bg);
+}
+
+.perfil-compra-item__date {
+  font-size: 13px;
+  color: var(--text);
+  flex: 1;
+}
+
+.perfil-compra-item__count {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.perfil-compra-item__total {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 80px;
+  text-align: right;
+}
+
+.perfil-compra-item__icon {
+  font-size: 18px;
+  color: var(--muted);
+  line-height: 1;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.perfil-compra-item__icon--open {
+  transform: rotate(90deg);
+}
+
+.perfil-compra-item__products {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 4px 0;
+}
+
+.perfil-compra-product {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 20px 9px 32px;
+  gap: 12px;
+}
+
+.perfil-compra-product__name {
+  font-size: 13px;
+  color: var(--text);
+  flex: 1;
+}
+
+.perfil-compra-product__price {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.perfil-compra-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 2px solid var(--border);
+  background: var(--bg);
+}
+
+.perfil-compra-total__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.perfil-compra-total__value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.perfil-delete-btn {
+  margin-left: auto;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.perfil-delete-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
 }

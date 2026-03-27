@@ -1,7 +1,7 @@
 const pool = require('../config/database');
 
 /**
- * Verifica si un nÃºmero de telÃ©fono ya existe en la BD.
+ * Verifica si un número de teléfono ya existe en la BD.
  * @param {string} telefono
  * @returns {Promise<boolean>}
  */

@@ -1,0 +1,80 @@
+<div class="dashboard">
+  <div class="section-header">
+    <h2 class="section-title">Dashboard</h2>
+  </div>
+
+  <div class="dash-section-row">
+    <p class="dash-section-title">Contactos</p>
+    <button class="btn-primary" id="btn-new-contact-dash">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Nuevo contacto
+    </button>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-card__top">
+        <span class="stat-card__label">Total</span>
+        <button class="stat-card__arrow" id="btn-ver-contactos" title="Ver todos">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <span class="stat-card__value" id="stat-total">—</span>
+      <span class="stat-card__sub">contactos</span>
+    </div>
+    <div class="stat-card stat-card--today">
+      <span class="stat-card__label">Hoy</span>
+      <span class="stat-card__value" id="stat-today">—</span>
+      <span class="stat-card__sub">nuevos</span>
+    </div>
+    <div class="stat-card stat-card--week">
+      <span class="stat-card__label">Esta semana</span>
+      <span class="stat-card__value" id="stat-week">—</span>
+      <span class="stat-card__sub">nuevos</span>
+    </div>
+    <div class="stat-card stat-card--month">
+      <span class="stat-card__label">Este mes</span>
+      <span class="stat-card__value" id="stat-month">—</span>
+      <span class="stat-card__sub">nuevos</span>
+    </div>
+  </div>
+
+  <div class="dash-section-row">
+    <p class="dash-section-title">Ventas</p>
+    <button class="btn-primary" id="btn-new-purchase-dash">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Nueva venta
+    </button>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-card__label">Total</span>
+      <span class="stat-card__value" id="inv-stat-total">—</span>
+      <span class="stat-card__sub">ventas</span>
+      <span class="stat-card__amount" id="inv-stat-total-amount">—</span>
+    </div>
+    <div class="stat-card stat-card--today">
+      <span class="stat-card__label">Hoy</span>
+      <span class="stat-card__value" id="inv-stat-today">—</span>
+      <span class="stat-card__sub">ventas</span>
+      <span class="stat-card__amount" id="inv-stat-today-amount">—</span>
+    </div>
+    <div class="stat-card stat-card--week">
+      <span class="stat-card__label">Esta semana</span>
+      <span class="stat-card__value" id="inv-stat-week">—</span>
+      <span class="stat-card__sub">ventas</span>
+      <span class="stat-card__amount" id="inv-stat-week-amount">—</span>
+    </div>
+    <div class="stat-card stat-card--month">
+      <span class="stat-card__label">Este mes</span>
+      <span class="stat-card__value" id="inv-stat-month">—</span>
+      <span class="stat-card__sub">ventas</span>
+      <span class="stat-card__amount" id="inv-stat-month-amount">—</span>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,5 @@
 const { existsByPhone, registerUser } = require('../repositories/userRepository');
 const { notifyBot }                   = require('../services/notificationService');
-const { io } = require('../index'); 
 
 /**
  * Procesa cada mensaje entrante:
@@ -13,13 +12,11 @@ const { io } = require('../index');
  */
 
 async function handleIncomingMessage(client, message, readyAt, io) {
-    console.log('[Handler] io recibido:', !!io); // ← agrega esto
   try {
     if (message.from.endsWith('@g.us') || message.fromMe) return;
 
     const ahoraEnSegundos = Math.floor(Date.now() / 1000);
     if (message.timestamp < ahoraEnSegundos - 30) {
-      console.log(`[Handler] Mensaje antiguo ignorado (${new Date(message.timestamp * 1000).toLocaleString()})`);
       return;
     }
 
@@ -29,15 +26,12 @@ async function handleIncomingMessage(client, message, readyAt, io) {
 
     const isExist = await existsByPhone(telefono);
 
-    if (isExist) {
-      console.log(`[Handler] Número existente: ${telefono} — sin acción`);
-      return;
-    }
+    if (isExist) return;
+    
 
     const registrado = await registerUser(telefono, nombre);
 
     if (registrado) {
-      console.log(`[Handler] Usuario registrado: ${nombre} (${telefono})`);
       await notifyBot(client, telefono, nombre);
       io.emit('user-registered', { nombre, telefono });
     } else {

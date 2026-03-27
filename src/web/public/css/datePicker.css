@@ -1,0 +1,67 @@
+/* ── Date Picker ── */
+.dp-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dp-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+
+
+.dp-field--year {
+  width: 70px;
+}
+
+.dp-input {
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 15px;
+  color: var(--text);
+  outline: none;
+  width: 48px;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.dp-field--year .dp-input {
+  width: 70px;
+}
+
+.dp-input::-webkit-outer-spin-button,
+.dp-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.dp-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb, 99,102,241), 0.15);
+}
+
+.dp-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dp-sep {
+  font-size: 18px;
+  color: var(--muted);
+  margin-top: -10px;
+}
+
+.dp-error {
+  display: block;
+  font-size: 11px;
+  color: var(--danger, #e53e3e);
+  margin-top: 4px;
+}

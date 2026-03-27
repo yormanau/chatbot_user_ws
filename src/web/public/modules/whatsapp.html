@@ -1,0 +1,50 @@
+<div class="whatsapp-section">
+  <div class="section-header">
+    <h2 class="section-title">Integración WhatsApp</h2>
+  </div>
+
+  <div class="wa-integration-card">
+    <div class="wa-integration-card__icon">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+        <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div id="disconnected-view" class="wa-integration-card__body">
+      <h3 class="wa-integration-card__title">Bot desconectado</h3>
+      <p class="wa-integration-card__desc">Conecta tu WhatsApp para activar el registro automático de contactos cuando envíen su primer mensaje.</p>
+      <button class="btn-connect" id="btn-connect" disabled>Conectar WhatsApp</button>
+    </div>
+
+    <div id="connected-view" class="wa-integration-card__body" hidden>
+      <h3 class="wa-integration-card__title">Bot activo</h3>
+      <p class="wa-integration-card__desc" id="hint-text">El bot está escuchando mensajes y registrando contactos automáticamente.</p>
+      <button class="btn-danger" id="btn-disconnect-wa">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M18.364 5.636a9 9 0 1 1-12.728 0M12 2v7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Desconectar
+      </button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <span>Escanea el código QR</span>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <img id="qr-img" src="" alt="QR Code"/>
+        <div class="timer-row">
+          <span class="timer-label">Expira en</span>
+          <span class="timer" id="timer">60</span>
+          <span class="timer-label">segundos</span>
+        </div>
+        <div class="timer-bar-track">
+          <div class="timer-bar" id="timer-bar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

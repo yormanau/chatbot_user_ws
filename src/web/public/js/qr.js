@@ -3,6 +3,7 @@ let timerInterval = null;
 let secondsLeft   = QR_DURATION;
 let lastQR        = null;
 let closingModal  = false;
+import { showToast } from './toast.js';
 
 export function initQR() {
   const statusDot  = document.getElementById('status-dot');
@@ -29,9 +30,12 @@ export function initQR() {
   }
 
   function updateUI({ connected, qr, secondsLeft: sLeft, botName }) {
+    const sidebarDot = document.getElementById('sidebar-wa-dot');
+
     if (connected) {
+      if (sidebarDot) sidebarDot.className = 'sidebar-wa-dot connected';
       statusDot.className    = 'status-dot connected';
-      statusName.textContent = botName ? `Bienvenido, ${botName} ✅.  ` : 'Conectado';
+      statusName.textContent = botName || '';
       statusText.textContent = '(Conectado)';
       btnConnect.disabled    = true;
       connectedView.hidden    = false;
@@ -42,7 +46,7 @@ export function initQR() {
         stopTimer();
         qrImg.style.display              = 'none';
         timerBar.parentElement.style.display = 'none';
-        document.querySelector('.timer-row').style.display = 'none'; 
+        document.querySelector('.timer-row').style.display = 'none';
 
         const msg = document.createElement('div');
         msg.id    = 'success-msg';
@@ -69,13 +73,13 @@ export function initQR() {
             closingModal = false;
           }
         }, 1000);
-
       }
 
-    } else { // ← este else es del if (connected)
+    } else {
+      if (sidebarDot) sidebarDot.className = 'sidebar-wa-dot';
       statusDot.className     = 'status-dot disconnected';
-      statusName.textContent  = 'Sin conexión';
-      statusText.textContent  = '';
+      statusName.textContent  = '';
+      statusText.textContent  = 'WhatsApp desconectado';
       btnConnect.disabled     = false;
       connectedView.hidden    = true;
       disconnectedView.hidden = false;
@@ -89,21 +93,56 @@ export function initQR() {
   }
 
   async function openModal() {
-    const res  = await fetch('/api/status');
-    const data = await res.json();
-    if (!data.qr) {
-      alert('QR no disponible aún, espera unos segundos.');
+    // ── Estado de carga en el botón ──
+    const originalHTML = btnConnect.innerHTML;
+    btnConnect.disabled = true;
+    btnConnect.innerHTML = `
+      <span>Conectando</span>
+      <svg class="btn-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-dasharray="31.4" stroke-dashoffset="10" opacity="0.3"/>
+        <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    `;
+
+    await fetch('/api/whatsapp/connect', { method: 'POST' });
+
+    // ── Polling hasta que el QR esté disponible (máx 20s) ──
+    let data = null;
+    for (let i = 0; i < 20; i++) {
+      await new Promise(r => setTimeout(r, 1000));
+      const res = await fetch('/api/status');
+      data = await res.json();
+      if (data.qr) break;
+      if (data.connected) break;
+    }
+
+    // ── Restaurar botón ──
+    btnConnect.innerHTML = originalHTML;
+    btnConnect.disabled  = false;
+
+    if (!data || (!data.qr && !data.connected)) {
+      showToast('error', 'Error', 'No se pudo obtener el QR, intenta de nuevo');
       return;
     }
+
+    if (data.connected) return; // ya estaba conectado
+
     lastQR       = data.qr;
     qrImg.src    = data.qr;
     modal.hidden = false;
     startTimer(data.secondsLeft);
   }
 
-  function closeModal() {
+  async function closeModal() {
     modal.hidden = true;
     stopTimer();
+
+    const res  = await fetch('/api/status');
+    const data = await res.json();
+    if (!data.connected) {
+      fetch('/api/whatsapp/disconnect', { method: 'POST' }).catch(() => {});
+    }
   }
 
   function startTimer(seconds) {

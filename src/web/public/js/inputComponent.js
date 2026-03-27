@@ -52,10 +52,11 @@ function validate(value, rules = []) {
   return null; // sin errores
 }
 
-function buildInput(type, value, placeholder, options) {
+function buildInput(type, value, placeholder, options, className = 'ic-input') {
   if (type === 'select') {
     return `
-      <select class="ic-input">
+      <select class="${className}">
+        ${placeholder ? `<option value="" disabled ${!value ? 'selected' : ''}>${placeholder}</option>` : ''}
         ${(options || []).map(o =>
           `<option value="${o.value}" ${o.value === value ? 'selected' : ''}>${o.label}</option>`
         ).join('')}
@@ -69,7 +70,7 @@ function buildInput(type, value, placeholder, options) {
     : type === 'email'  ? 'email'
     : 'text';
 
-  return `<input class="ic-input" type="${inputType}" value="${value ?? ''}" placeholder="${placeholder ?? ''}">`;
+  return `<input class="${className}" type="${inputType}" value="${value ?? ''}" placeholder="${placeholder ?? ''}">`;
 }
 
 // ── Modo inline (edición en perfil) ─────────────────────────────────────────
@@ -137,8 +138,8 @@ export function initInlineInput({
     }
 
     errorEl.hidden = true;
-    if (onConfirm) await onConfirm(newVal);
-    valueEl.textContent = newVal;
+    const result = onConfirm ? await onConfirm(newVal) : null;
+    valueEl.textContent = result ?? newVal;
     rowEl.classList.remove('perfil-row--editing');
   });
 }
@@ -154,6 +155,7 @@ export function initFormInput({
   rules       = [],
   onConfirm   = null,
   onChange    = null,
+  className   = 'ic-input',
 }) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -161,7 +163,7 @@ export function initFormInput({
   container.innerHTML = `
     <div class="ic-field">
       ${label ? `<label class="ic-label">${label}</label>` : ''}
-      ${buildInput(type, value, placeholder, options)}
+      ${buildInput(type, value, placeholder, options, className)}
       <span class="ic-error" hidden></span>
     </div>
   `;
