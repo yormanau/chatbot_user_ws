@@ -37,7 +37,7 @@ export function abrirFormularioRegistro() {
           <div class="register-form__group"><div id="field-ciudad"></div></div>
           <div class="register-form__group">
             <span class="ic-label">FECHA DE NACIMIENTO</span>
-            <div class="perfil-row__edit-group" id="reg-birth-dp"></div>
+            <div id="reg-birth-dp"></div>
           </div>
           <div class="divider"></div>
           <div class="register-form__actions">
