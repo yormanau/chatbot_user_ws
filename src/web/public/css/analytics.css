@@ -32,6 +32,11 @@
 }
 
 .adv-preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+.adv-preset-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 .adv-preset-btn.active {
   background: var(--accent);
   border-color: var(--accent);
@@ -183,6 +188,39 @@
   border-color: var(--accent);
   color: #fff;
 }
+
+/* ── Selector de métricas tendencia ── */
+.adv-trend-metrics {
+  display: flex;
+  gap: 6px;
+  padding: 8px 16px 0;
+}
+
+.adv-metric-btn {
+  padding: 4px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: none;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.adv-metric-btn--revenue.active {
+  border-color: #6366f1;
+  color: #6366f1;
+  background: rgba(99,102,241,0.08);
+}
+
+.adv-metric-btn--count.active {
+  border-color: #22c55e;
+  color: #22c55e;
+  background: rgba(34,197,94,0.08);
+}
+
+.adv-metric-btn:not(.active):hover { border-color: var(--accent); color: var(--accent); }
 
 /* ── Top listas ── */
 .adv-top-list {
@@ -472,7 +510,9 @@
   width: 100%;
   max-width: 480px;
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   transform: translateY(16px);
   transition: transform 0.2s ease;
@@ -514,6 +554,8 @@
 /* ── Body ── */
 .adv-cfg-body {
   padding: 6px 0 4px;
+  overflow-y: auto;
+  max-height: calc(90vh - 140px);
 }
 
 /* ── Sección interna ── */
@@ -656,16 +698,25 @@
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.15s;
-  z-index: 10;
+  z-index: 1100;
   box-shadow: 0 4px 16px rgba(0,0,0,0.25);
 }
 .adv-info:hover::after { opacity: 1; }
 
-/* Variante: tooltip hacia abajo (para cards en la parte superior) */
-.adv-info--down::after {
+/* Tooltip hacia abajo y a la izquierda (el borde derecho del tooltip se alinea con el botón) */
+.adv-info--down-left::after {
   bottom: auto;
   top: calc(100% + 8px);
   right: 0;
+  left: auto;
+}
+
+/* Tooltip hacia abajo y a la derecha (el borde izquierdo del tooltip se alinea con el botón) */
+.adv-info--down-right::after {
+  bottom: auto;
+  top: calc(100% + 8px);
+  left: 0;
+  right: auto;
 }
 
 /* ── Footer ── */

@@ -1,24 +1,55 @@
-const QR_DURATION = 60;
-let timerInterval = null;
-let secondsLeft   = QR_DURATION;
-let lastQR        = null;
-let closingModal  = false;
+const QR_DURATION      = 60;
+const PAIRING_DURATION = 120;
+
+let qrTimerInterval      = null;
+let pairingTimerInterval = null;
+let qrSecondsLeft        = QR_DURATION;
+let pairingSecondsLeft   = PAIRING_DURATION;
+let lastQR               = null;
+let closingModal         = false;
+let activeTab            = 'qr';
+
 import { showToast } from './toast.js';
 
 export function initQR() {
-  const statusDot  = document.getElementById('status-dot');
-  const statusText = document.getElementById('status-text');
-  const btnConnect = document.getElementById('btn-connect');
-  const modal      = document.getElementById('modal');
-  const modalClose = document.getElementById('modal-close');
-  const qrImg      = document.getElementById('qr-img');
-  const timerBar   = document.getElementById('timer-bar');
-  const modalBody  = document.querySelector('.modal-body');
-  const timer = document.getElementById('timer');
-  const connectedView    = document.getElementById('connected-view');
-  const disconnectedView = document.getElementById('disconnected-view');
-  const statusName = document.getElementById('status-name');
+  const statusDot          = document.getElementById('status-dot');
+  const statusText         = document.getElementById('status-text');
+  const statusName         = document.getElementById('status-name');
+  const btnConnect         = document.getElementById('btn-connect');
+  const modal              = document.getElementById('modal');
+  const modalClose         = document.getElementById('modal-close');
+  const modalTabs          = document.getElementById('modal-tabs');
+  const tabQR              = document.getElementById('tab-qr');
+  const tabPairing         = document.getElementById('tab-pairing');
+  const panelQR            = document.getElementById('panel-qr');
+  const panelPairing       = document.getElementById('panel-pairing');
+  const modalSuccess       = document.getElementById('modal-success');
+  const qrImg              = document.getElementById('qr-img');
+  const timerBar           = document.getElementById('timer-bar');
+  const timer              = document.getElementById('timer');
+  const pairingPhoneInput  = document.getElementById('pairing-phone');
+  const btnGetCode         = document.getElementById('btn-get-code');
+  const pairingForm        = document.getElementById('pairing-form');
+  const pairingCodeDisplay = document.getElementById('pairing-code-display');
+  const pairingCodeVal     = document.getElementById('pairing-code-val');
+  const pairingTimerEl     = document.getElementById('pairing-timer');
+  const pairingTimerBar    = document.getElementById('pairing-timer-bar');
+  const connectedView      = document.getElementById('connected-view');
+  const disconnectedView   = document.getElementById('disconnected-view');
 
+  // ── Tab switching ────────────────────────────────────────────
+  function switchTab(tab) {
+    activeTab = tab;
+    tabQR.classList.toggle('active', tab === 'qr');
+    tabPairing.classList.toggle('active', tab === 'pairing');
+    panelQR.hidden      = tab !== 'qr';
+    panelPairing.hidden = tab !== 'pairing';
+  }
+
+  tabQR.addEventListener('click', () => switchTab('qr'));
+  tabPairing.addEventListener('click', () => switchTab('pairing'));
+
+  // ── Status polling ───────────────────────────────────────────
   async function fetchStatus() {
     try {
       const res  = await fetch('/api/status');
@@ -29,7 +60,7 @@ export function initQR() {
     }
   }
 
-  function updateUI({ connected, qr, secondsLeft: sLeft, botName }) {
+  function updateUI({ connected, qr, secondsLeft: sLeft, botName, pairingCode, pairingSecondsLeft: pLeft }) {
     const sidebarDot = document.getElementById('sidebar-wa-dot');
 
     if (connected) {
@@ -43,36 +74,9 @@ export function initQR() {
 
       if (!modal.hidden && !closingModal) {
         closingModal = true;
-        stopTimer();
-        qrImg.style.display              = 'none';
-        timerBar.parentElement.style.display = 'none';
-        document.querySelector('.timer-row').style.display = 'none';
-
-        const msg = document.createElement('div');
-        msg.id    = 'success-msg';
-        msg.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 0;';
-        msg.innerHTML = `
-          <div style="font-size:48px">✅</div>
-          <p style="font-weight:600;font-size:16px;color:var(--text)">¡Conectado correctamente!</p>
-          <p style="font-size:13px;color:var(--muted)">Cerrando en <span id="countdown">3</span> segundos...</p>
-        `;
-        modalBody.appendChild(msg);
-
-        let count = 3;
-        const countdown = setInterval(() => {
-          count--;
-          const span = document.getElementById('countdown');
-          if (span) span.textContent = count;
-          if (count <= 0) {
-            clearInterval(countdown);
-            closeModal();
-            msg.remove();
-            qrImg.style.display                                = '';
-            timerBar.parentElement.style.display               = '';
-            document.querySelector('.timer-row').style.display = '';
-            closingModal = false;
-          }
-        }, 1000);
+        stopQRTimer();
+        stopPairingTimer();
+        showSuccess();
       }
 
     } else {
@@ -84,22 +88,48 @@ export function initQR() {
       connectedView.hidden    = true;
       disconnectedView.hidden = false;
 
-      if (!modal.hidden && qr && qr !== lastQR) {
+      // Actualizar QR si cambió
+      if (!modal.hidden && activeTab === 'qr' && qr && qr !== lastQR) {
         lastQR    = qr;
         qrImg.src = qr;
-        startTimer(sLeft);
+        startQRTimer(sLeft);
+      }
+
+      // Mostrar pairing code si llegó
+      if (!modal.hidden && activeTab === 'pairing' && pairingCode && !pairingCodeDisplay.hidden === false) {
+        showPairingCode(pairingCode, pLeft);
       }
     }
   }
 
+  function showSuccess() {
+    panelQR.hidden      = true;
+    panelPairing.hidden = true;
+    modalTabs.hidden    = true;
+    modalSuccess.hidden = false;
+
+    let count = 3;
+    document.getElementById('countdown').textContent = count;
+    const cd = setInterval(() => {
+      count--;
+      const span = document.getElementById('countdown');
+      if (span) span.textContent = count;
+      if (count <= 0) {
+        clearInterval(cd);
+        closeModal();
+        closingModal = false;
+      }
+    }, 1000);
+  }
+
+  // ── Modal open / close ───────────────────────────────────────
   async function openModal() {
-    // ── Estado de carga en el botón ──
     const originalHTML = btnConnect.innerHTML;
-    btnConnect.disabled = true;
+    btnConnect.disabled  = true;
     btnConnect.innerHTML = `
       <span>Conectando</span>
-      <svg class="btn-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+      <svg class="btn-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5"
           stroke-dasharray="31.4" stroke-dashoffset="10" opacity="0.3"/>
         <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
@@ -107,17 +137,15 @@ export function initQR() {
 
     await fetch('/api/whatsapp/connect', { method: 'POST' });
 
-    // ── Polling hasta que el QR esté disponible (máx 20s) ──
+    // Polling hasta QR disponible (máx 20s)
     let data = null;
     for (let i = 0; i < 20; i++) {
       await new Promise(r => setTimeout(r, 1000));
       const res = await fetch('/api/status');
       data = await res.json();
-      if (data.qr) break;
-      if (data.connected) break;
+      if (data.qr || data.connected) break;
     }
 
-    // ── Restaurar botón ──
     btnConnect.innerHTML = originalHTML;
     btnConnect.disabled  = false;
 
@@ -126,55 +154,139 @@ export function initQR() {
       return;
     }
 
-    if (data.connected) return; // ya estaba conectado
+    if (data.connected) return;
 
     lastQR       = data.qr;
     qrImg.src    = data.qr;
     modal.hidden = false;
-    startTimer(data.secondsLeft);
+    switchTab('qr');
+    startQRTimer(data.secondsLeft);
   }
 
-  async function closeModal() {
+  function closeModal() {
     modal.hidden = true;
-    stopTimer();
+    stopQRTimer();
+    stopPairingTimer();
 
-    const res  = await fetch('/api/status');
-    const data = await res.json();
-    if (!data.connected) {
-      fetch('/api/whatsapp/disconnect', { method: 'POST' }).catch(() => {});
-    }
+    // Restaurar QR panel
+    qrImg.src = '';
+    lastQR    = null;
+
+    // Restaurar pairing panel
+    pairingForm.hidden        = false;
+    pairingCodeDisplay.hidden = true;
+    pairingPhoneInput.value   = '';
+    pairingCodeVal.textContent = '----·----';
+
+    // Restaurar modal
+    modalSuccess.hidden = true;
+    modalTabs.hidden    = false;
+    switchTab('qr');
+
+    fetch('/api/status').then(r => r.json()).then(data => {
+      if (!data.connected) {
+        fetch('/api/whatsapp/disconnect', { method: 'POST' }).catch(() => {});
+      }
+    }).catch(() => {});
   }
 
-  function startTimer(seconds) {
-    stopTimer();
-    secondsLeft = seconds > 0 ? seconds : QR_DURATION;
-    updateBar();
-    timerInterval = setInterval(() => {
-      secondsLeft--;
-      updateBar();
-      if (secondsLeft <= 0) stopTimer();
+  // ── QR timer ─────────────────────────────────────────────────
+  function startQRTimer(seconds) {
+    stopQRTimer();
+    qrSecondsLeft = seconds > 0 ? seconds : QR_DURATION;
+    updateQRBar();
+    qrTimerInterval = setInterval(() => {
+      qrSecondsLeft--;
+      updateQRBar();
+      if (qrSecondsLeft <= 0) stopQRTimer();
     }, 1000);
   }
 
-  function stopTimer() {
-    clearInterval(timerInterval);
-    timerInterval = null;
+  function stopQRTimer() { clearInterval(qrTimerInterval); qrTimerInterval = null; }
+
+  function updateQRBar() {
+    timer.textContent        = qrSecondsLeft;
+    const pct                = (qrSecondsLeft / QR_DURATION) * 100;
+    timerBar.style.width     = pct + '%';
+    timerBar.style.background = pct > 40 ? 'var(--accent)' : pct > 20 ? '#f59e0b' : '#ef4444';
   }
 
-  function updateBar() {
-    timer.textContent = secondsLeft;
-    const pct                 = (secondsLeft / QR_DURATION) * 100;
-    timerBar.style.width      = pct + '%';
-    timerBar.style.background = pct > 40
-      ? 'var(--accent)'
-      : pct > 20 ? '#f59e0b' : '#ef4444';
+  // ── Pairing timer ────────────────────────────────────────────
+  function startPairingTimer(seconds) {
+    stopPairingTimer();
+    pairingSecondsLeft = seconds > 0 ? seconds : PAIRING_DURATION;
+    updatePairingBar();
+    pairingTimerInterval = setInterval(() => {
+      pairingSecondsLeft--;
+      updatePairingBar();
+      if (pairingSecondsLeft <= 0) stopPairingTimer();
+    }, 1000);
   }
 
+  function stopPairingTimer() { clearInterval(pairingTimerInterval); pairingTimerInterval = null; }
+
+  function updatePairingBar() {
+    pairingTimerEl.textContent   = pairingSecondsLeft;
+    const pct                    = (pairingSecondsLeft / PAIRING_DURATION) * 100;
+    pairingTimerBar.style.width  = pct + '%';
+    pairingTimerBar.style.background = pct > 40 ? 'var(--accent)' : pct > 20 ? '#f59e0b' : '#ef4444';
+  }
+
+  function showPairingCode(code, secondsLeft) {
+    if (!pairingCodeDisplay.hidden) return; // ya se muestra
+    const formatted = code.length === 8
+      ? `${code.slice(0, 4)}-${code.slice(4)}`
+      : code;
+    pairingCodeVal.textContent = formatted;
+    pairingForm.hidden         = true;
+    pairingCodeDisplay.hidden  = false;
+    startPairingTimer(secondsLeft);
+  }
+
+  // ── Pairing code request ─────────────────────────────────────
+  btnGetCode.addEventListener('click', async () => {
+    const phone = pairingPhoneInput.value.replace(/\D/g, '');
+    if (!phone || phone.length < 10) {
+      showToast('error', 'Número inválido', 'Ingresa el número con código de país (sin +)');
+      return;
+    }
+
+    const orig = btnGetCode.textContent;
+    btnGetCode.disabled     = true;
+    btnGetCode.textContent  = 'Solicitando...';
+
+    await fetch('/api/whatsapp/pairing-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone }),
+    });
+
+    // Polling para el código (máx 30s)
+    let data = null;
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 1000));
+      const res = await fetch('/api/status');
+      data = await res.json();
+      if (data.pairingCode || data.connected) break;
+    }
+
+    btnGetCode.disabled    = false;
+    btnGetCode.textContent = orig;
+
+    if (!data?.pairingCode && !data?.connected) {
+      showToast('error', 'Error', 'No se pudo obtener el código, verifica el número e intenta de nuevo');
+      return;
+    }
+
+    if (data.connected) return;
+
+    showPairingCode(data.pairingCode, data.pairingSecondsLeft);
+  });
+
+  // ── Event listeners ──────────────────────────────────────────
   btnConnect.addEventListener('click', openModal);
   modalClose.addEventListener('click', closeModal);
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
-  });
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
   fetchStatus();
   setInterval(fetchStatus, 2000);

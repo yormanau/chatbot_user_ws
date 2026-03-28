@@ -89,6 +89,22 @@
   line-height: 1;
 }
 
+.perfil-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 3px 10px;
+  width: fit-content;
+  margin-top: 8px;
+}
+
+.perfil-tier-badge--vip    { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+.perfil-tier-badge--gold   { background: #fffbeb; color: #b45309; border: 1px solid #fcd34d; }
+.perfil-tier-badge--silver { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; }
+.perfil-tier-badge--bronze { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+
 .perfil-phone {
   font-size: 13px;
   color: var(--muted);
@@ -498,4 +514,83 @@
 
 .perfil-delete-btn:hover {
   background: rgba(239, 68, 68, 0.1);
+}
+
+/* ── Canal badge ── */
+.perfil-channel-badge {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.perfil-channel-badge--whatsapp {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.perfil-channel-badge--manual {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #93c5fd;
+}
+
+/* ── Modal fullscreen de perfil ── */
+.perfil-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg);
+  overflow-y: auto;
+  animation: perfilModalIn 0.2s ease both;
+}
+
+@keyframes perfilModalIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.perfil-modal__topbar {
+  position: sticky;
+  top: 0;
+  background: var(--accent);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1;
+}
+
+.perfil-modal__title {
+  color: var(--on-accent, #fff);
+  font-size: 15px;
+  font-weight: 500;
+  flex: 1;
+}
+
+.perfil-modal__close {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 8px;
+  color: var(--on-accent, #fff);
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.perfil-modal__close:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.perfil-modal__body {
+  padding-top: 24px;
 }

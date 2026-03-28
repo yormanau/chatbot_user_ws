@@ -36,7 +36,7 @@
         <div class="adv-cfg-section">
           <div class="adv-cfg-section-title">
             Ventana de tiempo
-            <span class="adv-info" data-tip="Define en qué período se evalúan las compras para calcular el tier de cada cliente.">ℹ</span>
+            <span class="adv-info adv-info--down-right" data-tip="Define en qué período se evalúan las compras para calcular el tier de cada cliente.">ℹ</span>
           </div>
           <div class="adv-cfg-radios" id="cfg-window-radios">
             <label class="adv-cfg-radio"><input type="radio" name="cfg-window" value="0"> Todos los tiempos</label>
@@ -52,7 +52,7 @@
         <div class="adv-cfg-section">
           <div class="adv-cfg-section-title">
             💎 VIP
-            <span class="adv-info" data-tip="Los clientes en el top X% de gasto total dentro de la ventana de tiempo seleccionada.">ℹ</span>
+            <span class="adv-info adv-info--down-right" data-tip="Los clientes en el top X% de gasto total dentro de la ventana de tiempo seleccionada.">ℹ</span>
           </div>
           <div class="adv-cfg-row">
             <span class="adv-cfg-label">Top</span>
@@ -65,7 +65,7 @@
         <div class="adv-cfg-section">
           <div class="adv-cfg-section-title">
             🥇 Gold
-            <span class="adv-info" data-tip="Cliente que supera cualquiera de los dos umbrales: número de compras o monto total gastado.">ℹ</span>
+            <span class="adv-info adv-info--down-right" data-tip="Cliente que supera cualquiera de los dos umbrales: número de compras o monto total gastado.">ℹ</span>
           </div>
           <div class="adv-cfg-row">
             <span class="adv-cfg-label">≥</span>
@@ -80,7 +80,7 @@
         <div class="adv-cfg-section">
           <div class="adv-cfg-section-title">
             🥈 Silver
-            <span class="adv-info" data-tip="Cliente que supera cualquiera de los dos umbrales: número de compras o monto total gastado.">ℹ</span>
+            <span class="adv-info adv-info--down-right" data-tip="Cliente que supera cualquiera de los dos umbrales: número de compras o monto total gastado.">ℹ</span>
           </div>
           <div class="adv-cfg-row">
             <span class="adv-cfg-label">≥</span>
@@ -95,7 +95,7 @@
         <div class="adv-cfg-section">
           <div class="adv-cfg-section-title">
             🥉 Bronze
-            <span class="adv-info" data-tip="Cualquier cliente que haya realizado al menos X compras. Por debajo queda como Nuevo.">ℹ</span>
+            <span class="adv-info adv-info--down-right" data-tip="Cualquier cliente que haya realizado al menos X compras. Por debajo queda como Nuevo.">ℹ</span>
           </div>
           <div class="adv-cfg-row">
             <span class="adv-cfg-label">≥</span>
@@ -108,7 +108,7 @@
         <div class="adv-cfg-section">
           <div class="adv-cfg-section-title">
             Degradación automática
-            <span class="adv-info" data-tip="Si un cliente no realiza ninguna compra en el período definido, su tier baja un nivel automáticamente al recalcular.">ℹ</span>
+            <span class="adv-info adv-info--down-right" data-tip="Si un cliente no realiza ninguna compra en el período definido, su tier baja un nivel automáticamente al recalcular.">ℹ</span>
           </div>
           <div class="adv-cfg-toggle-row">
             <label class="adv-cfg-toggle">
@@ -135,10 +135,10 @@
 
   <div class="adv-period-bar">
     <div class="adv-period-presets">
-      <button class="adv-preset-btn active" data-preset="month">Este mes</button>
+      <button class="adv-preset-btn active" data-preset="today">Hoy</button>
       <button class="adv-preset-btn" data-preset="week">Esta semana</button>
+      <button class="adv-preset-btn" data-preset="month">Este mes</button>
       <button class="adv-preset-btn" data-preset="year">Este año</button>
-      <button class="adv-preset-btn" data-preset="today">Hoy</button>
     </div>
     <div class="adv-period-custom d-none">
       <input type="text" id="adv-date-from" class="ic-input adv-date-input" placeholder="Desde" readonly>
@@ -152,7 +152,7 @@
     <div class="adv-card">
       <div class="adv-card__header">
         <span class="adv-card__label">Ingresos totales</span>
-        <span class="adv-info adv-info--down" data-tip="Suma de todas las ventas en el período seleccionado. El indicador ▲▼ compara con el período anterior de igual duración.">ℹ</span>
+        <span class="adv-info adv-info--down-left" data-tip="Suma de todas las ventas en el período seleccionado. El indicador ▲▼ compara con el período anterior de igual duración.">ℹ</span>
       </div>
       <span class="adv-card__value" id="adv-revenue">—</span>
       <span class="adv-card__delta" id="adv-revenue-delta"></span>
@@ -160,7 +160,7 @@
     <div class="adv-card">
       <div class="adv-card__header">
         <span class="adv-card__label">Número de ventas</span>
-        <span class="adv-info adv-info--down" data-tip="Total de facturas registradas en el período. Cada factura cuenta como una venta, sin importar cuántos productos incluya.">ℹ</span>
+        <span class="adv-info adv-info--down-left" data-tip="Total de facturas registradas en el período. Cada factura cuenta como una venta, sin importar cuántos productos incluya.">ℹ</span>
       </div>
       <span class="adv-card__value" id="adv-count">—</span>
       <span class="adv-card__delta" id="adv-count-delta"></span>
@@ -168,14 +168,14 @@
     <div class="adv-card">
       <div class="adv-card__header">
         <span class="adv-card__label">Ticket promedio</span>
-        <span class="adv-info adv-info--down" data-tip="Valor promedio por venta: Ingresos totales ÷ Número de ventas. Indica cuánto gasta en promedio un cliente por visita.">ℹ</span>
+        <span class="adv-info adv-info--down-left" data-tip="Valor promedio por venta: Ingresos totales ÷ Número de ventas. Indica cuánto gasta en promedio un cliente por visita.">ℹ</span>
       </div>
       <span class="adv-card__value" id="adv-avg-ticket">—</span>
     </div>
     <div class="adv-card">
       <div class="adv-card__header">
         <span class="adv-card__label">Proyección del mes</span>
-        <span class="adv-info adv-info--down" data-tip="Estimación de ingresos al cierre del período, basada en el ritmo de ventas actual: (ingresos ÷ días transcurridos) × días totales del período.">ℹ</span>
+        <span class="adv-info adv-info--down-left" data-tip="Estimación de ingresos al cierre del período, basada en el ritmo de ventas actual: (ingresos ÷ días transcurridos) × días totales del período.">ℹ</span>
       </div>
       <span class="adv-card__value" id="adv-projection">—</span>
       <span class="adv-card__sub" id="adv-projection-sub"></span>
@@ -183,14 +183,13 @@
   </div>
 
   <!-- Sección 3: Tendencia de ventas -->
-  <div class="adv-panel d-none">
+  <div class="adv-panel">
     <div class="adv-panel__header">
       <span class="adv-panel__title">Tendencia de ventas</span>
-      <div class="adv-toggle-group">
-        <button class="adv-toggle-btn active" data-group="day">Día</button>
-        <button class="adv-toggle-btn" data-group="week">Semana</button>
-        <button class="adv-toggle-btn" data-group="month">Mes</button>
-      </div>
+    </div>
+    <div class="adv-trend-metrics">
+      <button class="adv-metric-btn adv-metric-btn--revenue active" data-metric="revenue">Ingresos</button>
+      <button class="adv-metric-btn adv-metric-btn--count" data-metric="count"># Ventas</button>
     </div>
     <div class="adv-chart-wrap">
       <canvas id="chart-trend"></canvas>
@@ -221,14 +220,15 @@
   <div class="adv-two-col">
     <div class="adv-panel">
       <div class="adv-panel__header">
-        <span class="adv-panel__title">Top 5 — Más vendidos</span>
-        
+        <span class="adv-panel__title">Top 5 — Productos más vendidos</span>
+        <span class="adv-info adv-info--down-left" data-tip="Los 5 productos con mayor cantidad de unidades vendidas en el período seleccionado.">ℹ</span>
       </div>
       <div id="adv-top-units" class="adv-top-list"></div>
     </div>
     <div class="adv-panel">
       <div class="adv-panel__header">
-        <span class="adv-panel__title">Top 5 — Más ingresos</span>
+        <span class="adv-panel__title">Top 5 — Productos con más ingresos</span>
+        <span class="adv-info adv-info--down-left" data-tip="Los 5 productos que generaron mayor ingreso total (precio × cantidad) en el período seleccionado.">ℹ</span>
       </div>
       <div id="adv-top-revenue" class="adv-top-list"></div>
     </div>
@@ -245,13 +245,15 @@
   <div class="adv-two-col">
     <div class="adv-panel">
       <div class="adv-panel__header">
-        <span class="adv-panel__title">Top 5 — Más frecuentes</span>
+        <span class="adv-panel__title">Top 5 — Clientes más frecuentes</span>
+        <span class="adv-info adv-info--down-left" data-tip="Los 5 clientes que realizaron más compras (visitas) en el período seleccionado, independientemente del monto gastado.">ℹ</span>
       </div>
       <div id="adv-top-freq" class="adv-top-list"></div>
     </div>
     <div class="adv-panel">
       <div class="adv-panel__header">
-        <span class="adv-panel__title">Top 5 — Mayor gasto</span>
+        <span class="adv-panel__title">Top 5 — Clientes con mayor gasto</span>
+        <span class="adv-info adv-info--down-left" data-tip="Los 5 clientes que acumularon el mayor gasto total en el período seleccionado, sin importar el número de visitas.">ℹ</span>
       </div>
       <div id="adv-top-spend" class="adv-top-list"></div>
     </div>

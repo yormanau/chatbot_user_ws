@@ -1,0 +1,98 @@
+<div class="aj-page">
+
+  <!-- ── Marca ── -->
+  <div class="aj-card">
+    <div class="aj-card__header">Marca</div>
+    <div class="aj-card__body">
+
+      <div class="aj-field">
+        <label class="aj-label" for="aj-brand-name">Nombre del negocio</label>
+        <input class="aj-input" type="text" id="aj-brand-name" placeholder="Mi Tienda" maxlength="40">
+      </div>
+
+      <div class="aj-field">
+        <label class="aj-label">Logo / Ícono</label>
+        <div class="aj-upload-area" id="aj-upload-area">
+          <img class="aj-logo-preview" id="aj-logo-preview" alt="Logo" hidden>
+          <span class="aj-upload-placeholder" id="aj-upload-placeholder">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Haz click o arrastra una imagen
+          </span>
+        </div>
+        <input type="file" id="aj-logo-file" accept="image/*" hidden>
+        <div class="aj-upload-actions">
+          <button class="aj-btn-secondary" id="aj-btn-upload">Subir imagen</button>
+          <button class="aj-btn-danger" id="aj-btn-clear" hidden>Quitar logo</button>
+        </div>
+        <span class="aj-hint">Se usará como favicon y en el sidebar. PNG recomendado, menos de 200KB.</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Apariencia ── -->
+  <div class="aj-card">
+    <div class="aj-card__header">Apariencia</div>
+    <div class="aj-card__body">
+
+      <div class="aj-field">
+        <label class="aj-label">Modo de color</label>
+        <div class="aj-theme-toggle">
+          <button class="aj-theme-btn" data-theme="light">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Claro
+          </button>
+          <button class="aj-theme-btn" data-theme="dark">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Oscuro
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Colores ── -->
+  <div class="aj-card">
+    <div class="aj-card__header">Colores</div>
+    <div class="aj-card__body">
+
+      <div class="aj-field">
+        <label class="aj-label" for="aj-accent">Color principal</label>
+        <div class="aj-color-row">
+          <input type="color" id="aj-accent" value="#075e54">
+          <div class="aj-color-swatch" id="aj-color-swatch"></div>
+          <span class="aj-color-hex" id="aj-color-hex">#075e54</span>
+          <div class="aj-color-hover-swatch" id="aj-color-hover-swatch"></div>
+          <span class="aj-color-label">Hover</span>
+        </div>
+      </div>
+
+      <div class="aj-field">
+        <label class="aj-label" for="aj-text-on-accent">Texto sobre el color principal</label>
+        <span class="aj-hint">Color del texto en el menú y botones.</span>
+        <div class="aj-color-row">
+          <input type="color" id="aj-text-on-accent" value="#ffffff">
+          <div class="aj-color-swatch" id="aj-toa-swatch"></div>
+          <span class="aj-color-hex" id="aj-toa-hex">#ffffff</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Guardar ── -->
+  <div class="aj-footer">
+    <button class="btn-primary" id="aj-save">Guardar cambios</button>
+  </div>
+
+</div>

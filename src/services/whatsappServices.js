@@ -8,18 +8,25 @@ const fs   = require('fs');
 const path = require('path');
 
 let manualStop = false;
-let isUnauthorized = false; 
-let ioInstance = null; 
+let isUnauthorized = false;
+let ioInstance = null;
 let qrImageUrl = null;
 let qrCreatedAt = null;
 let readyAt    = null;
 let client     = null;
 let isConnected = false;
 
-function getQRCreatedAt() { return qrCreatedAt; }
-function getIsConnected() { return isConnected; } 
-function getQRImageUrl() { return qrImageUrl; }
-function getClient()     { return client; }
+let pendingPairingPhone  = null;
+let pairingCode          = null;
+let pairingCodeCreatedAt = null;
+
+function getQRCreatedAt()           { return qrCreatedAt; }
+function getIsConnected()           { return isConnected; }
+function getQRImageUrl()            { return qrImageUrl; }
+function getClient()                { return client; }
+function getPairingCode()           { return pairingCode; }
+function getPairingCodeCreatedAt()  { return pairingCodeCreatedAt; }
+function setPairingPhone(phone)     { pendingPairingPhone = phone; }
 const isLocal = process.env.NODE_ENV !== 'production' && !process.env.RAILWAY_ENVIRONMENT;
 function getBotName() {
   return client?.info?.pushname || null;
@@ -39,7 +46,7 @@ function initWhatsApp(io) {
     : new RemoteAuth({
         clientId: 'chatbot',
         store,
-        backupSyncIntervalMs: 60000,
+        backupSyncIntervalMs: 21600000, // cada 6 horas
       }),
     puppeteer: {
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
@@ -54,17 +61,24 @@ function initWhatsApp(io) {
     },
   });
 
-  process.on('unhandledRejection', (reason) => {
-    if (reason?.message?.includes('Execution context was destroyed') ||
-        reason?.message?.includes('Protocol error')) {
-      return; // ignorar estos errores de puppeteer
-    }
-    console.error('[Error]', reason);
-  });
-
   client.on('qr', async (qr) => {
-    qrcode.generate(qr, { small: true });
     isConnected = false;
+    if (pendingPairingPhone) {
+      const phone = pendingPairingPhone;
+      pendingPairingPhone = null;
+      try {
+        const code = await client.requestPairingCode(phone);
+        pairingCode          = code;
+        pairingCodeCreatedAt = Date.now();
+        console.log('[WhatsApp] Pairing code generado:', code);
+        if (ioInstance) ioInstance.emit('pairing-code', { code });
+      } catch (err) {
+        console.error('[WhatsApp] Error al solicitar pairing code:', err.message);
+        if (ioInstance) ioInstance.emit('pairing-code-error', { error: err.message });
+      }
+      return;
+    }
+    qrcode.generate(qr, { small: true });
     qrImageUrl = await QRCode.toDataURL(qr);
     console.log('[WhatsApp] QR actualizado en /qr');
     qrCreatedAt = Date.now();
@@ -78,7 +92,10 @@ function initWhatsApp(io) {
   });
 
   client.on('authenticated', () => {
-    qrImageUrl = null;
+    qrImageUrl           = null;
+    pairingCode          = null;
+    pairingCodeCreatedAt = null;
+    pendingPairingPhone  = null;
     console.log('[WhatsApp] Sesión autenticada correctamente.');
   });
 
@@ -150,11 +167,14 @@ async function stopWhatsApp() {
     await client.destroy();
   } catch {}
 
-  client      = null;
-  qrImageUrl  = null;
-  qrCreatedAt = null;
-  isConnected = false;
-  readyAt     = null;
+  client               = null;
+  qrImageUrl           = null;
+  qrCreatedAt          = null;
+  isConnected          = false;
+  readyAt              = null;
+  pairingCode          = null;
+  pairingCodeCreatedAt = null;
+  pendingPairingPhone  = null;
   if (isLocal) {
     const authPath  = path.join(process.cwd(), '.wwebjs_auth');
     const cachePath = path.join(process.cwd(), '.wwebjs_cache');
@@ -200,6 +220,23 @@ function restartWhatsApp() {
   initWhatsApp(ioInstance);
 }
 
+async function requestPairing(phone) {
+  if (!client) {
+    pendingPairingPhone = phone;
+    initWhatsApp(ioInstance);
+    return { pending: true };
+  }
+  try {
+    const code = await client.requestPairingCode(phone);
+    pairingCode          = code;
+    pairingCodeCreatedAt = Date.now();
+    if (ioInstance) ioInstance.emit('pairing-code', { code });
+    return { code };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
 async function checkExistingSession() {
   if (isLocal) {
     // En local verifica si existe la carpeta de auth
@@ -217,4 +254,4 @@ async function checkExistingSession() {
   }
 }
 
-module.exports = { initWhatsApp, getQRImageUrl, getQRCreatedAt, getClient, getIsConnected, getBotName, restartWhatsApp, stopWhatsApp, checkExistingSession };
+module.exports = { initWhatsApp, getQRImageUrl, getQRCreatedAt, getClient, getIsConnected, getBotName, getPairingCode, getPairingCodeCreatedAt, setPairingPhone, requestPairing, restartWhatsApp, stopWhatsApp, checkExistingSession };

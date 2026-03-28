@@ -3,6 +3,16 @@
     <h2 class="section-title">Dashboard</h2>
   </div>
 
+  <!-- Estado WhatsApp -->
+  <div class="dash-wa-card">
+    <div class="dash-wa-dot" id="dash-wa-dot"></div>
+    <div class="dash-wa-info">
+      <span class="dash-wa-name">WhatsApp</span>
+      <span class="dash-wa-status" id="dash-wa-status">Verificando...</span>
+    </div>
+  </div>
+
+  <!-- Contactos -->
   <div class="dash-section-row">
     <p class="dash-section-title">Contactos</p>
     <button class="btn-primary" id="btn-new-contact-dash">
@@ -42,6 +52,7 @@
     </div>
   </div>
 
+  <!-- Ventas -->
   <div class="dash-section-row">
     <p class="dash-section-title">Ventas</p>
     <button class="btn-primary" id="btn-new-purchase-dash">
@@ -75,6 +86,22 @@
       <span class="stat-card__value" id="inv-stat-month">—</span>
       <span class="stat-card__sub">ventas</span>
       <span class="stat-card__amount" id="inv-stat-month-amount">—</span>
+    </div>
+  </div>
+
+  <div class="dash-recent-card">
+    <div class="dash-recent-card__header">Últimos contactos</div>
+    <div id="dash-recent-contacts">
+      <div class="dash-recent-empty">Cargando...</div>
+    </div>
+  </div>
+
+  
+
+  <div class="dash-recent-card">
+    <div class="dash-recent-card__header">Últimas ventas</div>
+    <div id="dash-recent-invoices">
+      <div class="dash-recent-empty">Cargando...</div>
     </div>
   </div>
 </div>

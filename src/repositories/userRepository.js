@@ -19,10 +19,10 @@ async function existsByPhone(telefono) {
  * @param {string} name
  * @returns {Promise<boolean>} true si se insertó correctamente
  */
-async function registerUser(phone, name) {
+async function registerUser(phone, name, channelId = null) {
   const [result] = await pool.query(
-    'INSERT INTO users (phone, name) VALUES (?, ?)',
-    [phone, name]
+    'INSERT INTO users (phone, name, channel_id) VALUES (?, ?, ?)',
+    [phone, name, channelId]
   );
   return result.affectedRows === 1;
 }

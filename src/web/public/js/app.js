@@ -1,11 +1,13 @@
 import { showToast }                                       from './toast.js';
 import { initQR }                                          from './qr.js';
-import { initDashboard, refreshAnalytics, refreshInvoiceAnalytics } from './home.js';
+import { initDashboard, refreshAnalytics, refreshInvoiceAnalytics, refreshWaStatus, refreshRecentContacts, refreshRecentInvoices } from './home.js';
 import { initContacts }                                    from './contacts.js';
 import { initPurchases }                                   from './compras.js';
 import { initProducts }                                    from './products.js';
 import { initRegistrarUsuario, abrirFormularioRegistro }   from './register.js';
 import { initAnalytics, refreshAdvAnalytics }               from './analytics.js';
+import { initAjustes }                                      from './ajustes.js';
+import { applySettings }                                    from './themeSettings.js';
 
 import { io } from 'https://cdn.socket.io/4.7.5/socket.io.esm.min.js';
 
@@ -18,17 +20,24 @@ let reloadPurchases = () => {};
 socket.on('user-registered', ({ nombre, telefono }) => {
   showToast('success', 'Nuevo contacto registrado', `${nombre} (${telefono})`);
   refreshAnalytics();
+  refreshRecentContacts();
   reloadContacts();
 });
 
 socket.on('invoice-created', () => {
   refreshInvoiceAnalytics();
   refreshAdvAnalytics();
+  refreshRecentInvoices();
   reloadPurchases();
+});
+
+socket.on('whatsapp-ready', () => {
+  refreshWaStatus();
 });
 
 socket.on('whatsapp-stopped', () => {
   showToast('success', 'WhatsApp desconectado', 'La sesión fue cerrada correctamente');
+  refreshWaStatus();
 });
 
 socket.on('whatsapp-unauthorized', async () => {
@@ -49,6 +58,7 @@ const SECTION_TITLES = {
   products:  'Productos',
   analytics: 'Analítica',
   whatsapp:  'WhatsApp',
+  settings:  'Ajustes',
 };
 
 export function navigateTo(sectionId) {
@@ -80,6 +90,9 @@ document.addEventListener('click', () => {
 }, { once: true });
 
 async function init() {
+  // Aplicar ajustes guardados (color, nombre, logo/favicon)
+  await applySettings();
+
   // Topbar
   await loadModule('topbar-container', 'topbar.html');
 
@@ -91,6 +104,7 @@ async function init() {
     loadModule('section-products',  'products.html'),
     loadModule('section-analytics', 'analytics.html'),
     loadModule('section-whatsapp',  'whatsapp.html'),
+    loadModule('section-settings',  'ajustes.html'),
   ]);
 
   // Sidebar: navegación
@@ -142,6 +156,7 @@ async function init() {
   await initAnalytics();
   initRegistrarUsuario();
   initQR();
+  initAjustes();
 
   // Polling de respaldo cada 30 s
   setInterval(() => { refreshAnalytics(); refreshInvoiceAnalytics(); }, 30_000);

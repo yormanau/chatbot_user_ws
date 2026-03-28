@@ -17,13 +17,29 @@
 .d-none { display: none !important; }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg:      #0f0f0f;
     --surface: #1a1a1a;
     --border:  #2a2a2a;
     --text:    #f0f0f0;
     --muted:   #888888;
   }
+}
+
+html[data-theme="dark"] {
+  --bg:      #0f0f0f;
+  --surface: #1a1a1a;
+  --border:  #2a2a2a;
+  --text:    #f0f0f0;
+  --muted:   #888888;
+}
+
+html[data-theme="light"] {
+  --bg:      #f5f5f5;
+  --surface: #ffffff;
+  --border:  #e0e0e0;
+  --text:    #1a1a1a;
+  --muted:   #666666;
 }
 
 body {
@@ -57,11 +73,11 @@ body {
   align-items: center;
   gap: 10px;
   padding: 20px 20px 16px;
-  color: #fff;
+  color: var(--on-accent, #fff);
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
+  border-bottom: 1px solid var(--on-accent-sep, rgba(255,255,255,0.12));
 }
 
 .sidebar-nav {
@@ -77,7 +93,7 @@ body {
   width: 100%;
   background: none;
   border: none;
-  color: rgba(255,255,255,0.72);
+  color: var(--on-accent-muted, rgba(255,255,255,0.72));
   font-size: 14px;
   font-weight: 500;
   padding: 10px 12px;
@@ -92,13 +108,13 @@ body {
 }
 
 .sidebar-nav__item:hover {
-  background: rgba(255,255,255,0.1);
-  color: #fff;
+  background: var(--on-accent-ov, rgba(255,255,255,0.1));
+  color: var(--on-accent, #fff);
 }
 
 .sidebar-nav__item.active {
-  background: rgba(255,255,255,0.18);
-  color: #fff;
+  background: var(--on-accent-ac, rgba(255,255,255,0.18));
+  color: var(--on-accent, #fff);
 }
 
 .sidebar-wa-dot {
@@ -118,20 +134,20 @@ body {
 
 .sidebar-divider {
   border: none;
-  border-top: 1px solid rgba(255,255,255,0.12);
+  border-top: 1px solid var(--on-accent-sep, rgba(255,255,255,0.12));
   margin: 6px 10px;
 }
 
 .sidebar-footer {
   padding: 12px 10px 20px;
-  border-top: 1px solid rgba(255,255,255,0.12);
+  border-top: 1px solid var(--on-accent-sep, rgba(255,255,255,0.12));
 }
 
 .sidebar-logout {
   width: 100%;
   background: none;
   border: none;
-  color: rgba(255,255,255,0.65);
+  color: var(--on-accent-sub, rgba(255,255,255,0.65));
   font-size: 14px;
   padding: 10px 12px;
   border-radius: 8px;
@@ -143,8 +159,8 @@ body {
 }
 
 .sidebar-logout:hover {
-  background: rgba(255,255,255,0.1);
-  color: #fff;
+  background: var(--on-accent-ov, rgba(255,255,255,0.1));
+  color: var(--on-accent, #fff);
 }
 
 .sidebar-logout img {
@@ -410,7 +426,7 @@ body {
 /* ── Buttons ────────────────────────────────────────────────── */
 .btn-primary {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent, #fff);
   border: none;
   border-radius: 8px;
   padding: 9px 16px;
@@ -582,6 +598,81 @@ body {
   height: 100%; width: 100%;
   background: var(--accent); border-radius: 2px;
   transition: width 1s linear, background 0.3s;
+}
+
+/* ── Modal tabs ─────────────────────────────────────────────── */
+.modal-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-tab {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -1px;
+}
+
+.modal-tab:hover  { color: var(--text); }
+.modal-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── Pairing code UI ─────────────────────────────────────────── */
+.pairing-hint {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.pairing-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  text-align: center;
+  letter-spacing: 0.04em;
+  box-sizing: border-box;
+}
+
+.pairing-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn-get-code {
+  width: 100%;
+  padding: 10px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-get-code:hover:not(:disabled) { background: var(--accent-h); }
+.btn-get-code:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.pairing-code {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  padding: 8px 0;
 }
 
 /* ── Input component ────────────────────────────────────────── */

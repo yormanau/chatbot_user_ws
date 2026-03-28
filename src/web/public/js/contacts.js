@@ -1,4 +1,5 @@
-import { initTable } from './tableComponent.js';
+import { initTable }        from './tableComponent.js';
+import { openPerfilModal } from './perfil.js';
 
 export function initContacts() {
   const panel = document.getElementById('contacts-panel');
@@ -27,9 +28,10 @@ export function initContacts() {
     onRowAction: {
       label:  'Ver perfil',
       icon:   `<svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                 <path d="M10 4H6C5.47 4 4.96 4.21 4.59 4.59C4.21 4.96 4 5.47 4 6V18C4 18.53 4.21 19.04 4.59 19.41C4.96 19.79 5.47 20 6 20H18C18.53 20 19.04 19.79 19.41 19.41C19.79 19.04 20 18.53 20 18V14M12 12L20 4M20 4V9M20 4H15" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                 <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+                 <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                </svg>`,
-      action: (row) => window.open(`/perfil?id=${row.id}`, '_blank'),
+      action: (row) => openPerfilModal(row.id),
     },
   });
 

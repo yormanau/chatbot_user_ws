@@ -41,7 +41,7 @@ let cfg = { ...DEFAULT_CFG };
 // ── Estado global ────────────────────────────────────────────────
 let dateFrom = null;
 let dateTo   = null;
-let trendGroup = 'day';
+let trendMetrics = { revenue: true, count: false };
 let rankingTier = 'all';
 
 // Instancias Chart.js
@@ -184,13 +184,36 @@ async function loadRevenue() {
   }
 }
 
+// ── Auto-agrupación según rango de fechas ────────────────────────
+function getAutoGroup() {
+  if (!dateFrom || !dateTo) return 'day';
+  const days = Math.round((new Date(dateTo) - new Date(dateFrom)) / 86400000) + 1;
+  if (days > 90) return 'month';
+  if (days > 31) return 'week';
+  return 'day';
+}
+
 // ── 2. Tendencia de ventas ────────────────────────────────────────
 async function loadTrend() {
   try {
-    const params = buildParams();
+    // Si el rango es un solo día, incluir el día anterior para tener contexto
+    let trendFrom = dateFrom;
+    let trendTo   = dateTo;
+    if (trendFrom && trendTo && trendFrom === trendTo) {
+      const prev = new Date(trendFrom);
+      prev.setDate(prev.getDate() - 1);
+      const pad = n => String(n).padStart(2, '0');
+      trendFrom = `${prev.getFullYear()}-${pad(prev.getMonth()+1)}-${pad(prev.getDate())}`;
+    }
+
+    const p   = new URLSearchParams();
+    if (trendFrom) p.set('from', trendFrom);
+    if (trendTo)   p.set('to',   trendTo);
+    const params = p.toString() ? '?' + p.toString() : '';
     const sep    = params ? '&' : '?';
-    const res    = await fetch('/api/analytics/adv/trend' + params + sep + 'group=' + trendGroup);
-    const rows   = await res.json();
+
+    const res  = await fetch('/api/analytics/adv/trend' + params + sep + 'group=' + getAutoGroup());
+    const rows = await res.json();
 
     const labels   = rows.map(r => r.label);
     const revenues = rows.map(r => Number(r.revenue));
@@ -200,33 +223,86 @@ async function loadTrend() {
     const ctx = document.getElementById('chart-trend');
     if (!ctx) return;
 
+    const baseRadius = labels.length > 30 ? 0 : 3;
+
+    const both     = trendMetrics.revenue && trendMetrics.count;
+    const datasets = [];
+
+    if (trendMetrics.revenue) {
+      datasets.push({
+        label: 'Ingresos',
+        data: revenues,
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99,102,241,0.08)',
+        fill: true,
+        tension: 0.3,
+        yAxisID: 'y',
+        pointRadius: baseRadius,
+        pointHoverRadius: 5,
+      });
+    }
+
+    if (trendMetrics.count) {
+      datasets.push({
+        label: '# Ventas',
+        data: counts,
+        borderColor: '#22c55e',
+        backgroundColor: 'transparent',
+        tension: 0.3,
+        yAxisID: both ? 'y2' : 'y',
+        borderDash: [4, 3],
+        pointRadius: baseRadius,
+        pointHoverRadius: 5,
+      });
+    }
+
+    // Plugin: dibuja flecha en el último punto siguiendo la dirección del vector
+    const arrowTipPlugin = {
+      id: 'arrowTip',
+      afterDraw(chart) {
+        chart.data.datasets.forEach((ds, di) => {
+          const meta = chart.getDatasetMeta(di);
+          if (meta.hidden) return;
+          const pts = meta.data;
+          if (pts.length < 2) return;
+          const p1    = pts[pts.length - 2];
+          const p2    = pts[pts.length - 1];
+          const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+          const size  = 8;
+          const c     = chart.ctx;
+          c.save();
+          c.translate(p2.x, p2.y);
+          c.rotate(angle);
+          c.beginPath();
+          c.moveTo(size, 0);
+          c.lineTo(-size * 0.6, -size * 0.5);
+          c.lineTo(-size * 0.6,  size * 0.5);
+          c.closePath();
+          c.fillStyle = ds.borderColor;
+          c.fill();
+          c.restore();
+        });
+      },
+    };
+
+    const scales = {
+      x: { ticks: { font: { size: 11 }, maxTicksLimit: 12 }, grid: { display: false } },
+      y: {
+        position: 'left',
+        ticks: {
+          font: { size: 11 },
+          callback: v => trendMetrics.revenue ? fmt(v) : fmtNum(v),
+        },
+      },
+    };
+    if (both) {
+      scales.y2 = { position: 'right', ticks: { font: { size: 11 } }, grid: { drawOnChartArea: false } };
+    }
+
     charts['trend'] = new Chart(ctx, {
       type: 'line',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'Ingresos',
-            data: revenues,
-            borderColor: '#6366f1',
-            backgroundColor: 'rgba(99,102,241,0.08)',
-            fill: true,
-            tension: 0.3,
-            yAxisID: 'y',
-            pointRadius: labels.length > 30 ? 0 : 3,
-          },
-          {
-            label: 'Ventas',
-            data: counts,
-            borderColor: '#22c55e',
-            backgroundColor: 'transparent',
-            tension: 0.3,
-            yAxisID: 'y2',
-            borderDash: [4, 3],
-            pointRadius: labels.length > 30 ? 0 : 3,
-          },
-        ],
-      },
+      plugins: [arrowTipPlugin],
+      data: { labels, datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -235,17 +311,13 @@ async function loadTrend() {
           legend: { position: 'top', labels: { boxWidth: 12, font: { size: 12 } } },
           tooltip: {
             callbacks: {
-              label: ctx => ctx.dataset.yAxisID === 'y'
-                ? ' ' + fmt(ctx.parsed.y)
-                : ' ' + fmtNum(ctx.parsed.y) + ' ventas',
+              label: c => c.dataset.label === 'Ingresos'
+                ? ' ' + fmt(c.parsed.y)
+                : ' ' + fmtNum(c.parsed.y) + ' ventas',
             },
           },
         },
-        scales: {
-          x: { ticks: { font: { size: 11 }, maxTicksLimit: 12 }, grid: { display: false } },
-          y:  { position: 'left',  ticks: { font: { size: 11 }, callback: v => fmt(v) } },
-          y2: { position: 'right', ticks: { font: { size: 11 } }, grid: { drawOnChartArea: false } },
-        },
+        scales,
       },
     });
 
@@ -745,12 +817,15 @@ export async function initAnalytics() {
     });
   });
 
-  // Toggle grupo tendencia
-  document.querySelectorAll('.adv-toggle-btn').forEach(btn => {
+  // Toggle métricas tendencia (Ingresos / # Ventas — multi-selección)
+  document.querySelectorAll('.adv-metric-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.adv-toggle-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      trendGroup = btn.dataset.group;
+      const metric = btn.dataset.metric;
+      const next   = !trendMetrics[metric];
+      // Al menos una métrica debe estar activa
+      if (!next && !Object.entries(trendMetrics).some(([k, v]) => k !== metric && v)) return;
+      trendMetrics[metric] = next;
+      btn.classList.toggle('active', next);
       loadTrend();
     });
   });
@@ -779,8 +854,42 @@ export async function initAnalytics() {
   // Inicializar flatpickr
   initDatePickers();
 
-  // Carga inicial: mes actual como preset
-  setPreset('month');
+  // Deshabilitar presets si no hay datos del período anterior para comparar
+  (async () => {
+    try {
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      const today = iso(now);
+
+      const mon = new Date(now);
+      mon.setDate(now.getDate() - ((now.getDay() || 7) - 1));
+
+      const ranges = {
+        week:  { from: iso(mon),                                    to: today },
+        month: { from: `${now.getFullYear()}-${pad(now.getMonth()+1)}-01`, to: today },
+        year:  { from: `${now.getFullYear()}-01-01`,                to: today },
+      };
+
+      const results = await Promise.all(
+        Object.entries(ranges).map(([preset, { from, to }]) =>
+          fetch(`/api/analytics/adv/revenue?from=${from}&to=${to}`)
+            .then(r => r.json())
+            .then(data => ({ preset, hasPrev: !!(data.prev_revenue || data.prev_count) }))
+        )
+      );
+
+      results.forEach(({ preset, hasPrev }) => {
+        if (!hasPrev) {
+          const btn = document.querySelector(`.adv-preset-btn[data-preset="${preset}"]`);
+          if (btn) btn.disabled = true;
+        }
+      });
+    } catch { /* silencioso */ }
+  })();
+
+  // Carga inicial
+  setPreset('today');
 
   // Cargar gráficas de todos los tiempos (no dependen de fecha)
   loadTimeCharts();

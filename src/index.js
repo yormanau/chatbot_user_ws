@@ -20,13 +20,17 @@ app.use('/', webRoutes);
 app.use('/api', apiRoutes);
 app.use(express.static('src/web/public'));
 
+const PUPPETEER_ERRORS = ['Execution context was destroyed', 'Protocol error', 'Target closed', 'Session closed'];
+const isPuppeteerNoise = msg => PUPPETEER_ERRORS.some(e => msg?.includes(e));
+
 process.on('uncaughtException', (err) => {
-  if (err?.message?.includes('Execution context was destroyed') ||
-      err?.message?.includes('Protocol error')) {
-    console.warn('[WhatsApp] Contexto destruido, continuando...');
-    return;
-  }
+  if (isPuppeteerNoise(err?.message)) return;
   console.error('[Error crítico]', err);
+});
+
+process.on('unhandledRejection', (reason) => {
+  if (isPuppeteerNoise(reason?.message)) return;
+  console.error('[Rechazo no manejado]', reason);
 });
 
 

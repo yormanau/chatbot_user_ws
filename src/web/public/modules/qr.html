@@ -1,5 +1,5 @@
 <div class="disconnected-view" id="disconnected-view">
-  <p class="hint">El bot está desconectado. Escanea el QR para conectarte.</p>
+  <p class="hint">El bot está desconectado. Conéctate para empezar a recibir mensajes.</p>
   <button class="btn-connect" id="btn-connect" disabled>Conectar WhatsApp</button>
 </div>
 
@@ -10,10 +10,17 @@
 <div class="modal-overlay" id="modal" hidden>
   <div class="modal">
     <div class="modal-header">
-      <span>Escanea el código QR</span>
+      <span>Conectar WhatsApp</span>
       <button class="modal-close" id="modal-close">✕</button>
     </div>
-    <div class="modal-body">
+
+    <div class="modal-tabs" id="modal-tabs">
+      <button class="modal-tab active" id="tab-qr">Código QR</button>
+      <button class="modal-tab" id="tab-pairing">Por teléfono</button>
+    </div>
+
+    <!-- Panel QR -->
+    <div class="modal-body" id="panel-qr">
       <img id="qr-img" src="" alt="QR Code"/>
       <div class="timer-row">
         <span class="timer-label">Expira en</span>
@@ -23,6 +30,34 @@
       <div class="timer-bar-track">
         <div class="timer-bar" id="timer-bar"></div>
       </div>
+    </div>
+
+    <!-- Panel Por teléfono -->
+    <div class="modal-body" id="panel-pairing" hidden>
+      <div id="pairing-form">
+        <p class="pairing-hint">Ingresa tu número de WhatsApp con código de país, sin <strong>+</strong></p>
+        <input class="pairing-input" id="pairing-phone" type="tel" placeholder="Ej: 521XXXXXXXXXX" />
+        <button class="btn-get-code" id="btn-get-code">Obtener código</button>
+      </div>
+      <div id="pairing-code-display" hidden>
+        <p class="pairing-hint">Ingresa este código en WhatsApp:<br><strong>Dispositivos vinculados → Vincular con número</strong></p>
+        <div class="pairing-code" id="pairing-code-val">----·----</div>
+        <div class="timer-row">
+          <span class="timer-label">Expira en</span>
+          <span class="timer" id="pairing-timer">120</span>
+          <span class="timer-label">segundos</span>
+        </div>
+        <div class="timer-bar-track">
+          <div class="timer-bar" id="pairing-timer-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay de éxito (compartido) -->
+    <div class="modal-body modal-success" id="modal-success" hidden>
+      <div style="font-size:48px">✅</div>
+      <p style="font-weight:600;font-size:16px;color:var(--text)">¡Conectado correctamente!</p>
+      <p style="font-size:13px;color:var(--muted)">Cerrando en <span id="countdown">3</span> segundos...</p>
     </div>
   </div>
 </div>

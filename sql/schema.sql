@@ -46,6 +46,19 @@ CREATE TABLE IF NOT EXISTS invoices (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Canal de registro de usuarios
+CREATE TABLE IF NOT EXISTS channels (
+  id   TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50)      NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_channel_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO channels (name) VALUES ('whatsapp'), ('manual');
+
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS channel_id TINYINT UNSIGNED NULL DEFAULT NULL;
+
 -- Configuración general de la aplicación (key-value)
 CREATE TABLE IF NOT EXISTS app_settings (
   `key`      VARCHAR(100) NOT NULL,

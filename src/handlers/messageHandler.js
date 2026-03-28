@@ -1,5 +1,6 @@
 const { existsByPhone, registerUser } = require('../repositories/userRepository');
 const { notifyBot }                   = require('../services/notificationService');
+const { CHANNELS }                    = require('../config/channels');
 
 /**
  * Procesa cada mensaje entrante:
@@ -29,7 +30,7 @@ async function handleIncomingMessage(client, message, readyAt, io) {
     if (isExist) return;
     
 
-    const registrado = await registerUser(telefono, nombre);
+    const registrado = await registerUser(telefono, nombre, CHANNELS.WHATSAPP);
 
     if (registrado) {
       await notifyBot(client, telefono, nombre);

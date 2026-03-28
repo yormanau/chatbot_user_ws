@@ -1,0 +1,220 @@
+.aj-page {
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Card ── */
+.aj-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.aj-card__header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.aj-card__body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Field ── */
+.aj-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aj-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.aj-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.aj-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(7,94,84,0.1);
+}
+
+.aj-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ── Upload area ── */
+.aj-upload-area {
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  height: 108px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  overflow: hidden;
+}
+
+.aj-upload-area:hover {
+  border-color: var(--accent);
+  background: rgba(7,94,84,0.03);
+}
+
+.aj-upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.aj-logo-preview {
+  max-height: 84px;
+  max-width: 220px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.aj-upload-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.aj-btn-secondary {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.aj-btn-secondary:hover {
+  background: var(--bg);
+}
+
+.aj-btn-danger {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--red);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.aj-btn-danger:hover {
+  background: rgba(239,68,68,0.06);
+}
+
+/* ── Color picker ── */
+.aj-color-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#aj-accent {
+  width: 44px;
+  height: 44px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.aj-color-swatch,
+.aj-color-hover-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.aj-color-hex {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  min-width: 58px;
+}
+
+.aj-color-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ── Theme toggle ── */
+.aj-theme-toggle {
+  display: flex;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.aj-theme-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 7px;
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.aj-theme-btn.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+
+/* ── Footer ── */
+.aj-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 4px;
+}

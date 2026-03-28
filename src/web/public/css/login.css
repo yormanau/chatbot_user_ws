@@ -12,6 +12,14 @@
   --radius:   14px;
 }
 
+html[data-theme="light"] {
+  --bg:      #f0f0f0;
+  --surface: #ffffff;
+  --border:  #d8d8d8;
+  --text:    #1a1a1a;
+  --muted:   #666666;
+}
+
 body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg);
