@@ -384,6 +384,30 @@
   cursor: default;
 }
 
+/* ── DatePicker en perfil ── */
+.perfil-row .dp-container {
+  display: flex;
+  align-items: center;
+}
+
+.perfil-row .dp-wrap {
+  gap: 4px;
+}
+
+.perfil-row .dp-input {
+  width: 36px;
+  font-size: 13px;
+  padding: 4px 6px;
+}
+
+.perfil-row .dp-field--year .dp-input {
+  width: 58px;
+}
+
+.perfil-row:has(.dp-container) .perfil-row__edit-group {
+  justify-content: center;
+}
+
 /* ── Historial de compras ────────────────────────────────────── */
 .perfil-compras-empty {
   padding: 24px 20px;

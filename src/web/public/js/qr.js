@@ -11,6 +11,12 @@ let activeTab            = 'qr';
 
 import { showToast } from './toast.js';
 
+let _onConnected = null;
+
+export function notifyConnected() {
+  if (_onConnected) _onConnected();
+}
+
 export function initQR() {
   const statusDot          = document.getElementById('status-dot');
   const statusText         = document.getElementById('status-text');
@@ -23,7 +29,6 @@ export function initQR() {
   const tabPairing         = document.getElementById('tab-pairing');
   const panelQR            = document.getElementById('panel-qr');
   const panelPairing       = document.getElementById('panel-pairing');
-  const modalSuccess       = document.getElementById('modal-success');
   const qrImg              = document.getElementById('qr-img');
   const timerBar           = document.getElementById('timer-bar');
   const timer              = document.getElementById('timer');
@@ -72,12 +77,6 @@ export function initQR() {
       connectedView.hidden    = false;
       disconnectedView.hidden = true;
 
-      if (!modal.hidden && !closingModal) {
-        closingModal = true;
-        stopQRTimer();
-        stopPairingTimer();
-        showSuccess();
-      }
 
     } else {
       if (sidebarDot) sidebarDot.className = 'sidebar-wa-dot';
@@ -103,24 +102,16 @@ export function initQR() {
   }
 
   function showSuccess() {
-    panelQR.hidden      = true;
-    panelPairing.hidden = true;
-    modalTabs.hidden    = true;
-    modalSuccess.hidden = false;
-
-    let count = 3;
-    document.getElementById('countdown').textContent = count;
-    const cd = setInterval(() => {
-      count--;
-      const span = document.getElementById('countdown');
-      if (span) span.textContent = count;
-      if (count <= 0) {
-        clearInterval(cd);
-        closeModal();
-        closingModal = false;
-      }
-    }, 1000);
+    if (closingModal) return;
+    closingModal = true;
+    stopQRTimer();
+    stopPairingTimer();
+    closeModal();
+    closingModal = false;
+    showToast('success', '¡Conectado!', 'WhatsApp conectado correctamente.');
   }
+
+  _onConnected = showSuccess;
 
   // ── Modal open / close ───────────────────────────────────────
   async function openModal() {
@@ -179,7 +170,6 @@ export function initQR() {
     pairingCodeVal.textContent = '----·----';
 
     // Restaurar modal
-    modalSuccess.hidden = true;
     modalTabs.hidden    = false;
     switchTab('qr');
 

@@ -3,7 +3,7 @@ const express            = require('express');
 const { createServer }   = require('http');
 const { Server }         = require('socket.io');
 const { runMigrations }  = require('./config/migrate');
-const { initWhatsApp, checkExistingSession }   = require('./services/whatsappServices');
+const { initWhatsApp }   = require('./services/whatsappServices');
 const webRoutes          = require('./routes/web');
 const apiRoutes          = require('./routes/api');
 const cookieParser       = require('cookie-parser');
@@ -37,13 +37,6 @@ process.on('unhandledRejection', (reason) => {
 async function start() {
   try {
     await runMigrations();
-
-    // ── Auto-conectar si ya hay sesión guardada ──
-    const hasSession = await checkExistingSession();
-    if (hasSession) {
-      console.log('[WhatsApp] Sesión existente encontrada, conectando automáticamente...');
-      initWhatsApp(io);
-    }
 
     httpServer.listen(PORT, () => {
       console.log(`[Server] Corriendo en puerto ${PORT}`);

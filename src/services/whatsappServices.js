@@ -66,7 +66,13 @@ function initWhatsApp(io) {
     if (pendingPairingPhone) {
       const phone = pendingPairingPhone;
       pendingPairingPhone = null;
+      await new Promise(r => setTimeout(r, 2000));
       try {
+        await client.pupPage.evaluate(() => {
+          if (typeof window.onCodeReceivedEvent !== 'function') {
+            window.onCodeReceivedEvent = (code) => code;
+          }
+        });
         const code = await client.requestPairingCode(phone);
         pairingCode          = code;
         pairingCodeCreatedAt = Date.now();
@@ -221,20 +227,18 @@ function restartWhatsApp() {
 }
 
 async function requestPairing(phone) {
-  if (!client) {
-    pendingPairingPhone = phone;
-    initWhatsApp(ioInstance);
-    return { pending: true };
+  pendingPairingPhone  = phone;
+  pairingCode          = null;
+  pairingCodeCreatedAt = null;
+
+  if (client) {
+    client.removeAllListeners();
+    client.destroy().catch(() => {});
+    client = null;
   }
-  try {
-    const code = await client.requestPairingCode(phone);
-    pairingCode          = code;
-    pairingCodeCreatedAt = Date.now();
-    if (ioInstance) ioInstance.emit('pairing-code', { code });
-    return { code };
-  } catch (err) {
-    return { error: err.message };
-  }
+
+  initWhatsApp(ioInstance);
+  return { pending: true };
 }
 
 async function checkExistingSession() {

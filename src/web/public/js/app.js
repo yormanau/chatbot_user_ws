@@ -1,5 +1,5 @@
 import { showToast }                                       from './toast.js';
-import { initQR }                                          from './qr.js';
+import { initQR, notifyConnected }                         from './qr.js';
 import { initDashboard, refreshAnalytics, refreshInvoiceAnalytics, refreshWaStatus, refreshRecentContacts, refreshRecentInvoices } from './home.js';
 import { initContacts }                                    from './contacts.js';
 import { initPurchases }                                   from './compras.js';
@@ -32,6 +32,7 @@ socket.on('invoice-created', () => {
 });
 
 socket.on('whatsapp-ready', () => {
+  notifyConnected();
   refreshWaStatus();
 });
 

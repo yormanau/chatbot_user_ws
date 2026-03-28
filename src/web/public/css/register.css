@@ -199,8 +199,12 @@
 
 
 
+.register-panel .dp-input {
+  width: 38px;
+}
+
 .register-panel .dp-field--year .dp-input {
-  width: 70px;
+  width: 62px;
 }
 
 

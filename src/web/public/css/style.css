@@ -513,6 +513,8 @@ body {
   gap: 10px;
 }
 
+.wa-integration-card__body[hidden] { display: none; }
+
 .wa-integration-card__title {
   font-size: 16px;
   font-weight: 600;
@@ -573,6 +575,8 @@ body {
   gap: 16px;
 }
 
+.modal-body[hidden] { display: none; }
+
 #qr-img {
   width: 220px; height: 220px;
   border-radius: 8px;
@@ -601,6 +605,8 @@ body {
 }
 
 /* ── Modal tabs ─────────────────────────────────────────────── */
+.modal-tabs[hidden] { display: none; }
+
 .modal-tabs {
   display: flex;
   border-bottom: 1px solid var(--border);
