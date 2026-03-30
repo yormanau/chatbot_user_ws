@@ -29,7 +29,7 @@ export function initPurchases() {
       { key: 'user_phone', label: 'Teléfono',   sortable: false },
       { key: 'num_items',       label: 'Productos',  sortable: true  },
       { key: 'total',           label: 'Total',      sortable: true,  format: formatCurrency },
-      { key: 'payment_method',  label: 'Pago',       sortable: true  },
+      { key: 'payment_method',  label: 'Método de pago',       sortable: true  },
       { key: 'created_at',      label: 'Fecha',      sortable: true,  type: 'date' },
     ],
     filters:     [],
