@@ -47,6 +47,7 @@ class MySQLStore {
     const exists = await this.sessionExists(options);
     const conn   = await this.db.getConnection();
     try {
+      await conn.query('SET SESSION max_allowed_packet = 209715200');
       if (exists) {
         await conn.query(
           'UPDATE whatsapp_sessions SET session_data = ?, updated_at = NOW() WHERE session_id = ?',

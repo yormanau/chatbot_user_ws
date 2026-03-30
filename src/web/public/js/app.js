@@ -83,12 +83,6 @@ async function loadModule(containerId, file) {
   }
 }
 
-// ── Desbloquea audio en primera interacción ────────────────────
-document.addEventListener('click', () => {
-  const audio = new Audio('/sounds/positive-notification.wav');
-  audio.volume = 0;
-  audio.play().catch(() => {});
-}, { once: true });
 
 async function init() {
   // Aplicar ajustes guardados (color, nombre, logo/favicon)
@@ -136,6 +130,7 @@ async function init() {
 
   // WhatsApp: desconectar
   document.getElementById('btn-disconnect-wa')?.addEventListener('click', async () => {
+    if (!confirm('¿Desconectar WhatsApp? Se cerrará la sesión activa.')) return;
     await fetch('/api/whatsapp/disconnect', { method: 'POST' });
   });
 

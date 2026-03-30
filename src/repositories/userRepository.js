@@ -21,7 +21,7 @@ async function existsByPhone(telefono) {
  */
 async function registerUser(phone, name, channelId = null) {
   const [result] = await pool.query(
-    'INSERT INTO users (phone, name, channel_id) VALUES (?, ?, ?)',
+    'INSERT IGNORE INTO users (phone, name, channel_id) VALUES (?, ?, ?)',
     [phone, name, channelId]
   );
   return result.affectedRows === 1;

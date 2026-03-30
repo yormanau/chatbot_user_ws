@@ -630,6 +630,12 @@ body {
 .modal-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
 /* ── Pairing code UI ─────────────────────────────────────────── */
+#pairing-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .pairing-hint {
   font-size: 13px;
   color: var(--muted);
