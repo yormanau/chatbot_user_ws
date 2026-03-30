@@ -1,6 +1,6 @@
 const db = require('../config/database');
 
-const SORT_COLS = { user_name: 'u.name', num_items: 'num_items', total: 'i.total', created_at: 'i.created_at' };
+const SORT_COLS = { user_name: 'u.name', num_items: 'num_items', total: 'i.total', created_at: 'i.created_at', payment_method: 'pm.name' };
 
 const InvoiceModel = {
   async count(search) {
@@ -24,10 +24,12 @@ const InvoiceModel = {
       `SELECT i.id, i.total, i.created_at,
               u.name  AS user_name,
               u.phone AS user_phone,
-              COUNT(ii.id) AS num_items
+              COUNT(ii.id) AS num_items,
+              pm.name AS payment_method
        FROM   invoices i
        JOIN   users u ON i.user_id = u.id
        LEFT JOIN invoice_items ii ON ii.invoice_id = i.id
+       LEFT JOIN payment_methods pm ON i.payment_method_id = pm.id
        WHERE  1=1 ${searchCond}
        GROUP  BY i.id
        ORDER  BY ${orderCol} ${orderDir}
@@ -40,9 +42,11 @@ const InvoiceModel = {
   async findById(id) {
     const [[row]] = await db.query(
       `SELECT i.id, i.total, i.created_at,
-              u.name AS user_name, u.phone AS user_phone
+              u.name AS user_name, u.phone AS user_phone,
+              pm.name AS payment_method
        FROM invoices i
        JOIN users u ON i.user_id = u.id
+       LEFT JOIN payment_methods pm ON i.payment_method_id = pm.id
        WHERE i.id = ?`,
       [id]
     );
@@ -71,12 +75,17 @@ const InvoiceModel = {
     return rows;
   },
 
-  async create(conn, userId, total) {
+  async create(conn, userId, total, paymentMethodId) {
     const [result] = await conn.query(
-      `INSERT INTO invoices (user_id, total) VALUES (?, ?)`,
-      [userId, total]
+      `INSERT INTO invoices (user_id, total, payment_method_id) VALUES (?, ?, ?)`,
+      [userId, total, paymentMethodId || null]
     );
     return result.insertId;
+  },
+
+  async listPaymentMethods() {
+    const [rows] = await db.query(`SELECT id, name FROM payment_methods ORDER BY id`);
+    return rows;
   },
 
   async createItem(conn, invoiceId, productId, name, price, quantity) {

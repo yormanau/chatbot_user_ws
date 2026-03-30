@@ -38,9 +38,10 @@ router.get('/products/list',   requireAuth, productCtrl.list);
 router.get('/products/search', requireAuth, productCtrl.search);
 
 // ── Facturas ──────────────────────────────────────────────────
-router.get ('/invoices',     requireAuth, invoiceCtrl.list);
-router.get ('/invoices/:id', requireAuth, invoiceCtrl.getById);
-router.post('/invoices',     requireAuth, invoiceCtrl.create);
+router.get ('/payment-methods', requireAuth, invoiceCtrl.listPaymentMethods);
+router.get ('/invoices',        requireAuth, invoiceCtrl.list);
+router.get ('/invoices/:id',    requireAuth, invoiceCtrl.getById);
+router.post('/invoices',        requireAuth, invoiceCtrl.create);
 
 // ── Analítica básica ──────────────────────────────────────────
 router.get('/analytics/invoices',    requireAuth, analyticsCtrl.invoiceSummary);

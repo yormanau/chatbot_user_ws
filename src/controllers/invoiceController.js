@@ -15,12 +15,13 @@ async function list(req, res) {
 
     res.json({
       data: rows.map(r => ({
-        id:         r.id,
-        user_name:  normalizeNames(toStr(r.user_name)),
-        user_phone: toStr(r.user_phone),
-        total:      Number(r.total),
-        num_items:  Number(r.num_items),
-        created_at: r.created_at,
+        id:             r.id,
+        user_name:      normalizeNames(toStr(r.user_name)),
+        user_phone:     toStr(r.user_phone),
+        total:          Number(r.total),
+        num_items:      Number(r.num_items),
+        payment_method: toStr(r.payment_method),
+        created_at:     r.created_at,
       })),
       total,
       page:       validPage,
@@ -43,9 +44,10 @@ async function getById(req, res) {
 
     res.json({
       ...inv,
-      total:      Number(inv.total),
-      user_name:  normalizeNames(toStr(inv.user_name)),
-      user_phone: toStr(inv.user_phone),
+      total:          Number(inv.total),
+      user_name:      normalizeNames(toStr(inv.user_name)),
+      user_phone:     toStr(inv.user_phone),
+      payment_method: toStr(inv.payment_method),
       items: items.map(i => ({
         product_name: toStr(i.product_name),
         price:        Number(i.price),
@@ -57,8 +59,17 @@ async function getById(req, res) {
   }
 }
 
+async function listPaymentMethods(req, res) {
+  try {
+    const rows = await InvoiceModel.listPaymentMethods();
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 async function create(req, res) {
-  const { user_id, items } = req.body;
+  const { user_id, items, payment_method_id } = req.body;
 
   if (!user_id || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'Datos incompletos' });
@@ -70,7 +81,7 @@ async function create(req, res) {
   try {
     await conn.beginTransaction();
 
-    const invoiceId = await InvoiceModel.create(conn, user_id, total);
+    const invoiceId = await InvoiceModel.create(conn, user_id, total, payment_method_id || null);
 
     for (const item of items) {
       const name      = item.name.trim();
@@ -119,4 +130,4 @@ async function getByUser(req, res) {
   }
 }
 
-module.exports = { list, getById, create, getByUser };
+module.exports = { list, getById, create, getByUser, listPaymentMethods };

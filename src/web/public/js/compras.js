@@ -1,5 +1,6 @@
-import { showToast } from './toast.js';
-import { initTable }  from './tableComponent.js';
+import { showToast }     from './toast.js';
+import { initTable }     from './tableComponent.js';
+import { initFormInput } from './inputComponent.js';
 
 // ── Formateador de moneda ────────────────────────────────────
 function formatCurrency(value) {
@@ -26,9 +27,10 @@ export function initPurchases() {
     columns: [
       { key: 'user_name',  label: 'Cliente',    sortable: true  },
       { key: 'user_phone', label: 'Teléfono',   sortable: false },
-      { key: 'num_items',  label: 'Productos',  sortable: true  },
-      { key: 'total',      label: 'Total',      sortable: true,  format: formatCurrency },
-      { key: 'created_at', label: 'Fecha',      sortable: true,  type: 'date' },
+      { key: 'num_items',       label: 'Productos',  sortable: true  },
+      { key: 'total',           label: 'Total',      sortable: true,  format: formatCurrency },
+      { key: 'payment_method',  label: 'Pago',       sortable: true  },
+      { key: 'created_at',      label: 'Fecha',      sortable: true,  type: 'date' },
     ],
     filters:     [],
     rowsPerPage: [10, 25, 50],
@@ -133,7 +135,10 @@ export async function abrirDetalleVenta(invoiceId) {
         <span class="compra-total__value">${formatCurrency(inv.total)}</span>
       </div>
 
-      <p class="detalle-fecha">${formatDate(inv.created_at)}</p>
+      <div class="detalle-meta">
+        ${inv.payment_method ? `<span class="detalle-meta__item">Pago: <strong>${inv.payment_method}</strong></span>` : ''}
+        <span class="detalle-meta__item">${formatDate(inv.created_at)}</span>
+      </div>
     `;
   } catch (err) {
     overlay.querySelector('#detalle-body').innerHTML =
@@ -142,8 +147,11 @@ export async function abrirDetalleVenta(invoiceId) {
 }
 
 // ── Modal Nueva Venta ─────────────────────────────────────────
-export function abrirModalCompra({ onSuccess } = {}) {
+export async function abrirModalCompra({ onSuccess } = {}) {
   if (document.getElementById('compra-overlay')) return;
+
+  const paymentMethodsRes = await fetch('/api/payment-methods');
+  const paymentMethods    = await paymentMethodsRes.json();
 
   let selectedUser = null;
   let items        = [];
@@ -235,6 +243,11 @@ export function abrirModalCompra({ onSuccess } = {}) {
 
           <div class="compra-items" id="compra-items"></div>
 
+          <!-- Bloque: Método de pago -->
+          <div class="compra-block">
+            <div id="compra-payment-method"></div>
+          </div>
+
           <div class="compra-total" id="compra-total" hidden>
             <span class="compra-total__label">Total</span>
             <span class="compra-total__value" id="compra-total-value">$0</span>
@@ -258,6 +271,17 @@ export function abrirModalCompra({ onSuccess } = {}) {
 
   document.body.appendChild(overlay);
   requestAnimationFrame(() => overlay.classList.add('compra-overlay--visible'));
+
+  // ── Método de pago ───────────────────────────────────────────
+  const paymentInput = initFormInput({
+    containerId: 'compra-payment-method',
+    type:        'select',
+    label:       'Método de pago *',
+    placeholder: 'Selecciona...',
+    options:     paymentMethods.map(pm => ({ value: String(pm.id), label: pm.name })),
+    rules:       [{ rule: 'required' }],
+    className:   'ic-input',
+  });
 
   // ── Referencias ──────────────────────────────────────────────
   const userInput      = overlay.querySelector('#compra-user-input');
@@ -463,6 +487,7 @@ export function abrirModalCompra({ onSuccess } = {}) {
       prodNameInput.focus();
       return;
     }
+    if (!paymentInput.validate()) return;
 
     submitBtn.disabled    = true;
     submitBtn.textContent = 'Registrando...';
@@ -472,8 +497,9 @@ export function abrirModalCompra({ onSuccess } = {}) {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
-          user_id: selectedUser.id,
-          items:   items.map(i => ({ name: i.name, price: i.price, quantity: i.quantity, product_id: i.product_id })),
+          user_id:           selectedUser.id,
+          payment_method_id: Number(paymentInput.getValue()),
+          items:             items.map(i => ({ name: i.name, price: i.price, quantity: i.quantity, product_id: i.product_id })),
         }),
       });
       const data = await res.json();
