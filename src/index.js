@@ -1,86 +1,67 @@
 require('dotenv').config();
-const { runMigrations }         = require('./config/migrate');
-const { Client, RemoteAuth }    = require('whatsapp-web.js');
-const qrcode                    = require('qrcode-terminal');
-const QRCode                    = require('qrcode');
-const express                   = require('express');
-const { handleIncomingMessage } = require('./handlers/messageHandler');
-const MySQLStore                = require('./store/MySQLStore');
-const db                        = require('./config/database'); // tu conexión mysql2
+const express            = require('express');
+const { createServer }   = require('http');
+const { Server }         = require('socket.io');
+const { runMigrations }  = require('./config/migrate');
+const { initWhatsApp }   = require('./services/whatsappServices');
+const webRoutes          = require('./routes/web');
+const apiRoutes          = require('./routes/api');
+const cookieParser       = require('cookie-parser');
 
-const app = express();
+const app        = express();
+const httpServer = createServer(app);
+const io         = new Server(httpServer, { cors: { origin: '*' } });
+
 const PORT = process.env.PORT || 3000;
-let qrImageUrl = null;
-let readyAt = null;
 
-app.get('/', (req, res) => res.redirect('/qr'));
+app.use(cookieParser());
+app.use(express.json());
+app.use('/', webRoutes);
+app.use('/api', apiRoutes);
+app.use(express.static('src/web/public'));
 
-app.get('/qr', async (req, res) => {
-  if (!qrImageUrl) {
-    return res.status(404).send('QR no disponible aún, espera que el cliente inicie.');
-  }
-  res.send(`<img src="${qrImageUrl}" style="width:300px"/>`);
+const PUPPETEER_ERRORS = ['Execution context was destroyed', 'Protocol error', 'Target closed', 'Session closed'];
+const isPuppeteerNoise = msg => PUPPETEER_ERRORS.some(e => msg?.includes(e));
+
+process.on('uncaughtException', (err) => {
+  if (isPuppeteerNoise(err?.message)) return;
+  console.error('[Error crítico]', err);
 });
 
-app.listen(PORT, () => {
-  console.log(`[Server] QR disponible en http://localhost:${PORT}/qr`);
+process.on('unhandledRejection', (reason) => {
+  if (isPuppeteerNoise(reason?.message)) return;
+  console.error('[Rechazo no manejado]', reason);
 });
 
-// ---- Store + Cliente ----
-const store = new MySQLStore(db);
-
-
-const client = new Client({
-  authStrategy: new RemoteAuth({
-    clientId: 'chatbot', 
-    store: store,
-    backupSyncIntervalMs: 3600000, // guarda sesión cada 5 min
-  }),
-  puppeteer: {
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-      '--no-first-run',
-      '--no-zygote',
-      '--single-process',
-    ],
-  },
-});
-
-client.on('qr', async (qr) => {
-  qrcode.generate(qr, { small: true });
-  qrImageUrl = await QRCode.toDataURL(qr);
-  console.log('[WhatsApp] QR actualizado en /qr');
-});
-
-client.on('authenticated', () => {
-  qrImageUrl = null;
-  console.log('[WhatsApp] Sesión autenticada correctamente.');
-});
-
-client.on('ready', () => {
-  readyAt = Date.now();
-  console.log('[WhatsApp] Cliente listo y escuchando mensajes...');
-});
-
-client.on('remote_session_saved', () => {
-  console.log('[WhatsApp] Sesión guardada en MySQL ✅');
-});
-
-client.on('disconnected', (reason) => {
-  console.warn('[WhatsApp] Desconectado:', reason);
-});
-
-client.on('message', (message) => handleIncomingMessage(client, message, readyAt));
 
 async function start() {
-  await runMigrations();
-  client.initialize();
+  try {
+    await runMigrations();
+
+    httpServer.listen(PORT, () => {
+      console.log(`[Server] Corriendo en puerto ${PORT}`);
+    });
+  } catch (err) {
+    console.error('[Server] Error al iniciar:', err);
+  }
 }
 
-// Probando conexión a la base de datos antes de iniciar el cliente
+async function shutdown() {
+  console.log('[Server] Cerrando limpiamente...');
+  const { getClient } = require('./services/whatsappServices');
+  const client = getClient();
+  if (client) {
+    try {
+      await client.destroy();
+      console.log('[WhatsApp] Cliente destruido correctamente');
+    } catch {}
+  }
+  process.exit(0);
+}
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+
+module.exports = { io };  // ← exporta io para usarlo en otros archivos
 
 start();

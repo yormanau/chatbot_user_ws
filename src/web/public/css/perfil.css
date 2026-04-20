@@ -1,0 +1,620 @@
+.perfil-topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: var(--accent);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 50;
+}
+
+.perfil-back {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.perfil-back:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.perfil-topbar__title {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.perfil-content {
+  padding: 80px 24px 24px;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.perfil-loading {
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 40px 0;
+}
+
+/* ── Avatar card ── */
+.perfil-avatar-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fadeUp 0.3s ease both;
+}
+
+.perfil-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #fff;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.perfil-avatar-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.perfil-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1;
+}
+
+.perfil-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 3px 10px;
+  width: fit-content;
+  margin-top: 8px;
+}
+
+.perfil-tier-badge--vip    { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+.perfil-tier-badge--gold   { background: #fffbeb; color: #b45309; border: 1px solid #fcd34d; }
+.perfil-tier-badge--silver { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; }
+.perfil-tier-badge--bronze { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+
+.perfil-phone {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ── Info card ── */
+.perfil-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  animation: fadeUp 0.3s ease both;
+  animation-delay: 0.05s;
+}
+
+.perfil-card__header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.perfil-card__body {
+  padding: 4px 0;
+}
+
+.perfil-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+
+.perfil-row:last-child {
+  border-bottom: none;
+}
+
+.perfil-row__label {
+  font-size: 13px;
+  color: var(--muted);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.perfil-row__value {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+  text-align: right;
+}
+
+/* ── Empty state ── */
+.perfil-empty {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  animation: fadeUp 0.3s ease both;
+  animation-delay: 0.1s;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Edit inline ── */
+.perfil-row {
+  position: relative;
+}
+
+.perfil-row__edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.2s;
+  flex-shrink: 0;
+  /* ← siempre visible en mobile */
+  opacity: 1;
+}
+
+.perfil-row:hover .perfil-row__edit-btn {
+  opacity: 1;
+}
+
+.perfil-row__edit-btn:hover {
+  color: var(--accent);
+}
+
+/* ── Edit mode ── */
+.perfil-row--editing .perfil-row__value {
+  display: none;
+}
+
+.perfil-row--editing .perfil-row__edit-btn {
+  display: none;
+}
+
+.perfil-row__edit-group {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.perfil-row--editing .perfil-row__edit-group {
+  display: flex;
+}
+
+.perfil-row__input {
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 16px;
+  color: var(--text);
+  outline: none;
+  width: 160px;
+}
+
+.perfil-row__confirm {
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.perfil-row__confirm:hover {
+  background: var(--accent-h);
+}
+
+.perfil-row__cancel {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.perfil-row__cancel:hover {
+  background: var(--border);
+}
+
+/* ── Collapsible card ── */
+.perfil-card__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  /* hereda los estilos del header */
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: background 0.15s;
+}
+
+.perfil-card__toggle:hover {
+  background: var(--border);
+}
+
+.perfil-card__toggle-icon {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--accent);
+  transition: transform 0.25s;
+  line-height: 1;
+}
+
+/* Cuando está expandido, quita el borde inferior del header */
+.perfil-card__toggle[aria-expanded="false"] {
+  border-bottom-color: transparent;
+}
+
+/* Cuerpo colapsable */
+.perfil-card__body--collapsed {
+  display: none;
+}
+
+/* ── Header con botón ＋ ── */
+.perfil-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.perfil-card__add-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 2px;
+  transition: opacity 0.2s;
+}
+
+.perfil-card__add-btn:hover {
+  opacity: 0.7;
+}
+
+/* ── Fila del select ── */
+.perfil-add-row {
+  padding: 10px 20px;
+  align-items: center;
+}
+
+.perfil-add-select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+
+/* ── Edit group responsive ── */
+.perfil-row--editing {
+  flex-wrap: wrap;
+}
+
+.perfil-row--editing .perfil-row__label {
+  flex: 0 0 100%;
+  margin-bottom: 4px;
+}
+
+.perfil-row--editing .perfil-row__edit-group {
+  flex: 1;
+  width: 100%;
+}
+
+.perfil-row__input {
+  flex: 1;
+  min-width: 0;  /* evita que el input desborde */
+}
+
+.perfil-row__edit-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+/* ── DatePicker en perfil ── */
+.perfil-row .dp-container {
+  display: flex;
+  align-items: center;
+}
+
+.perfil-row .dp-wrap {
+  gap: 4px;
+}
+
+.perfil-row .dp-input {
+  width: 36px;
+  font-size: 13px;
+  padding: 4px 6px;
+}
+
+.perfil-row .dp-field--year .dp-input {
+  width: 58px;
+}
+
+.perfil-row:has(.dp-container) .perfil-row__edit-group {
+  justify-content: center;
+}
+
+/* ── Historial de compras ────────────────────────────────────── */
+.perfil-compras-empty {
+  padding: 24px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.perfil-compra-item {
+  border-bottom: 1px solid var(--border);
+}
+
+.perfil-compra-item:last-child {
+  border-bottom: none;
+}
+
+.perfil-compra-item__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.perfil-compra-item__header:hover {
+  background: var(--bg);
+}
+
+.perfil-compra-item__date {
+  font-size: 13px;
+  color: var(--text);
+  flex: 1;
+}
+
+.perfil-compra-item__count {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.perfil-compra-item__total {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 80px;
+  text-align: right;
+}
+
+.perfil-compra-item__icon {
+  font-size: 18px;
+  color: var(--muted);
+  line-height: 1;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.perfil-compra-item__icon--open {
+  transform: rotate(90deg);
+}
+
+.perfil-compra-item__products {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 4px 0;
+}
+
+.perfil-compra-product {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 20px 9px 32px;
+  gap: 12px;
+}
+
+.perfil-compra-product__name {
+  font-size: 13px;
+  color: var(--text);
+  flex: 1;
+}
+
+.perfil-compra-product__price {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.perfil-compra-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 2px solid var(--border);
+  background: var(--bg);
+}
+
+.perfil-compra-total__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.perfil-compra-total__value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.perfil-delete-btn {
+  margin-left: auto;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.perfil-delete-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* ── Canal badge ── */
+.perfil-channel-badge {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.perfil-channel-badge--whatsapp {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.perfil-channel-badge--manual {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #93c5fd;
+}
+
+/* ── Modal fullscreen de perfil ── */
+.perfil-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg);
+  overflow-y: auto;
+  animation: perfilModalIn 0.2s ease both;
+}
+
+@keyframes perfilModalIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.perfil-modal__topbar {
+  position: sticky;
+  top: 0;
+  background: var(--accent);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1;
+}
+
+.perfil-modal__title {
+  color: var(--on-accent, #fff);
+  font-size: 15px;
+  font-weight: 500;
+  flex: 1;
+}
+
+.perfil-modal__close {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 8px;
+  color: var(--on-accent, #fff);
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.perfil-modal__close:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.perfil-modal__body {
+  padding-top: 24px;
+}

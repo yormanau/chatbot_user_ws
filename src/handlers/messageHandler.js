@@ -1,5 +1,6 @@
 const { existsByPhone, registerUser } = require('../repositories/userRepository');
 const { notifyBot }                   = require('../services/notificationService');
+const { CHANNELS }                    = require('../config/channels');
 
 /**
  * Procesa cada mensaje entrante:
@@ -11,13 +12,12 @@ const { notifyBot }                   = require('../services/notificationService
  * @param {import('whatsapp-web.js').Message} message
  */
 
-async function handleIncomingMessage(client, message, readyAt) {
+async function handleIncomingMessage(client, message, readyAt, io) {
   try {
     if (message.from.endsWith('@g.us') || message.fromMe) return;
 
     const ahoraEnSegundos = Math.floor(Date.now() / 1000);
     if (message.timestamp < ahoraEnSegundos - 30) {
-      console.log(`[Handler] Mensaje antiguo ignorado (${new Date(message.timestamp * 1000).toLocaleString()})`);
       return;
     }
 
@@ -27,16 +27,14 @@ async function handleIncomingMessage(client, message, readyAt) {
 
     const isExist = await existsByPhone(telefono);
 
-    if (isExist) {
-      console.log(`[Handler] Número existente: ${telefono} — sin acción`);
-      return;
-    }
+    if (isExist) return;
+    
 
-    const registrado = await registerUser(telefono, nombre);
+    const registrado = await registerUser(telefono, nombre, CHANNELS.WHATSAPP);
 
     if (registrado) {
-      console.log(`[Handler] Usuario registrado: ${nombre} (${telefono})`);
       await notifyBot(client, telefono, nombre);
+      io.emit('user-registered', { nombre, telefono });
     } else {
       console.error(`[Handler] Fallo al registrar: ${telefono}`);
     }
