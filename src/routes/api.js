@@ -43,10 +43,10 @@ router.get ('/invoices',        requireAuth, invoiceCtrl.list);
 router.get ('/invoices/:id',    requireAuth, invoiceCtrl.getById);
 router.post('/invoices',        requireAuth, invoiceCtrl.create);
 
-// ── Analítica (desactivada) ───────────────────────────────────
-// router.get('/analytics/invoices',    requireAuth, analyticsCtrl.invoiceSummary);
-// router.get('/analytics/users',       requireAuth, analyticsCtrl.userCount);
-// router.get('/analytics/users/list',  requireAuth, analyticsCtrl.userList);
+// ── Analítica básica (usada por el dashboard) ─────────────────
+router.get('/analytics/invoices',    requireAuth, analyticsCtrl.invoiceSummary);
+router.get('/analytics/users',       requireAuth, analyticsCtrl.userCount);
+router.get('/analytics/users/list',  requireAuth, analyticsCtrl.userList);
 // router.get('/analytics/adv/revenue',          requireAuth, analyticsCtrl.revenue);
 // router.get('/analytics/adv/trend',            requireAuth, analyticsCtrl.trend);
 // router.get('/analytics/adv/by-weekday',       requireAuth, analyticsCtrl.byWeekday);
