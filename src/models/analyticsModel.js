@@ -2,16 +2,16 @@ const db = require('../config/database');
 
 const USER_FILTERS = {
   all:   `1=1`,
-  today: `DATE(create_at) = CURDATE()`,
-  week:  `create_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`,
-  month: `MONTH(create_at) = MONTH(NOW()) AND YEAR(create_at) = YEAR(NOW())`,
+  today: `DATE(create_at - INTERVAL 5 HOUR) = DATE(NOW() - INTERVAL 5 HOUR)`,
+  week:  `(create_at - INTERVAL 5 HOUR) >= DATE_SUB(NOW() - INTERVAL 5 HOUR, INTERVAL 7 DAY)`,
+  month: `MONTH(create_at - INTERVAL 5 HOUR) = MONTH(NOW() - INTERVAL 5 HOUR) AND YEAR(create_at - INTERVAL 5 HOUR) = YEAR(NOW() - INTERVAL 5 HOUR)`,
 };
 
 const INVOICE_FILTERS = {
   all:   '1=1',
-  today: 'DATE(created_at) = CURDATE()',
-  week:  'created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)',
-  month: 'MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())',
+  today: 'DATE(created_at - INTERVAL 5 HOUR) = DATE(NOW() - INTERVAL 5 HOUR)',
+  week:  '(created_at - INTERVAL 5 HOUR) >= DATE_SUB(NOW() - INTERVAL 5 HOUR, INTERVAL 7 DAY)',
+  month: 'MONTH(created_at - INTERVAL 5 HOUR) = MONTH(NOW() - INTERVAL 5 HOUR) AND YEAR(created_at - INTERVAL 5 HOUR) = YEAR(NOW() - INTERVAL 5 HOUR)',
 };
 
 const GROUP_EXPR = {
