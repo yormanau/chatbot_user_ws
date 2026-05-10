@@ -15,7 +15,9 @@ http://localhost:3000   →   Panel de administración
 http://localhost:3000/qr  →  Vinculación del bot vía QR o código de 6 dígitos
 ```
 
-*(Agrega aquí una imagen o GIF del dashboard)*
+<img width="1512" height="982" alt="Captura de pantalla 2026-05-09 a la(s) 8 38 04 p m" src="https://github.com/user-attachments/assets/d2aa1561-5b10-47ab-b38f-c109892f67be" />
+<img width="1512" height="982" alt="Captura de pantalla 2026-05-09 a la(s) 8 38 17 p m" src="https://github.com/user-attachments/assets/e926abf2-91dd-4161-a3bb-c815632aa39a" />
+
 
 ## Stack tecnológico
 
