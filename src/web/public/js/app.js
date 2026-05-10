@@ -1,5 +1,6 @@
 import { showToast }                                       from './toast.js';
-import { initDashboard, refreshAnalytics, refreshInvoiceAnalytics, refreshRecentContacts, refreshRecentInvoices  } from './home.js';
+import { initQR, notifyConnected }                         from './qr.js';
+import { initDashboard, refreshAnalytics, refreshInvoiceAnalytics, refreshWaStatus, refreshRecentContacts, refreshRecentInvoices } from './home.js';
 import { initContacts }                                    from './contacts.js';
 import { initPurchases }                                   from './compras.js';
 import { initProducts }                                    from './products.js';
@@ -28,12 +29,33 @@ socket.on('invoice-created', () => {
   reloadPurchases();
 });
 
+socket.on('whatsapp-ready', () => {
+  notifyConnected();
+  refreshWaStatus();
+});
+
+socket.on('whatsapp-stopped', () => {
+  showToast('success', 'WhatsApp desconectado', 'La sesión fue cerrada correctamente');
+  refreshWaStatus();
+});
+
+socket.on('whatsapp-unauthorized', async () => {
+  if (unauthorized) return;
+  unauthorized = true;
+  const modal = document.getElementById('modal');
+  if (modal) modal.hidden = true;
+  showToast('error', 'Acceso denegado', 'Este número no está autorizado');
+  await fetch('/api/whatsapp/restart', { method: 'POST' });
+  setTimeout(() => { unauthorized = false; }, 3000);
+});
+
 // ── Navegación entre secciones ─────────────────────────────────
 const SECTION_TITLES = {
   dashboard: 'Dashboard',
   contacts:  'Contactos',
   purchases: 'Ventas',
   products:  'Productos',
+  whatsapp:  'WhatsApp',
   settings:  'Ajustes',
 };
 
@@ -72,6 +94,7 @@ async function init() {
     loadModule('section-contacts',  'contacts.html'),
     loadModule('section-purchases', 'compras.html'),
     loadModule('section-products',  'products.html'),
+    loadModule('section-whatsapp',  'whatsapp.html'),
     loadModule('section-settings',  'ajustes.html'),
   ]);
 
@@ -123,6 +146,7 @@ async function init() {
   ({ reload: reloadPurchases } = initPurchases() ?? { reload: () => {} });
   initProducts();
   initRegistrarUsuario();
+  initQR();
   initAjustes();
 
   // Polling de respaldo cada 30 s

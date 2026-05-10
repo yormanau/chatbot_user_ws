@@ -18,11 +18,11 @@ router.post('/auth/logout',  authCtrl.logout);
 // ── Estado general ────────────────────────────────────────────
 router.get('/status', statusCtrl.getStatus);
 
-// ── WhatsApp (desactivado) ────────────────────────────────────
-// router.post('/whatsapp/connect',      requireAuth, whatsappCtrl.connect);
-// router.post('/whatsapp/disconnect',   requireAuth, whatsappCtrl.disconnect);
-// router.post('/whatsapp/restart',               whatsappCtrl.restart);
-// router.post('/whatsapp/pairing-code', requireAuth, whatsappCtrl.pairingCode);
+// ── WhatsApp ──────────────────────────────────────────────────
+router.post('/whatsapp/connect',      requireAuth, whatsappCtrl.connect);
+router.post('/whatsapp/disconnect',   requireAuth, whatsappCtrl.disconnect);
+router.post('/whatsapp/restart',               whatsappCtrl.restart);
+router.post('/whatsapp/pairing-code', requireAuth, whatsappCtrl.pairingCode);
 
 // ── Usuarios ──────────────────────────────────────────────────
 router.get   ('/users/search',    requireAuth, userCtrl.search);

@@ -13,6 +13,7 @@ export async function initDashboard() {
   await Promise.all([
     refreshAnalytics(),
     refreshInvoiceAnalytics(),
+    refreshWaStatus(),
     refreshRecentContacts(),
     refreshRecentInvoices(),
   ]);
